@@ -76,12 +76,12 @@ requirejs([
         .then(function(response) {
           self.set({
             status: response.statusText,
-            status_class: 'status_ok',
+            status_class: 'success',
           });
         }).catch(function(error) {
           self.set({
             status: "Not OK",
-            status_class: 'status_error',
+            status_class: 'error',
           });
         });
     },
@@ -111,11 +111,17 @@ requirejs([
           self = this;
           client().createPost('/api/v1/posts', this.get('post'))
             .then(function(response) {
-              console.log('create post: ' + response);
+              self.set({
+                message: 'success',
+                message_class: 'success',
+              });
               self.fire('success');
             })
             .catch(function(error) {
-              self.set('message', error);
+              self.set({
+                message: error.statusText,
+                message_class: 'error',
+              });
               self.fire('error');
             });
         }
