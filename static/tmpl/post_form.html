@@ -1,0 +1,10 @@
+<div class="pure-form">
+  <label for="post-create-title">title</label>
+  <input type="text" id="post-create-title" name="title" value="{{post.title}}">
+  <label for="post-create-title">body</label>
+  <input type="text" id="post-create-body" name="body" value="{{post.body}}">
+  <label for="post-create-published">publish?</label>
+  <input type="checkbox" id="post-create-published" name="published" checked="{{post.published}}">
+  <button on-click='create' class="pure-button pure-button-primary">create</button>
+  <p>{{message}}</p>
+</div>

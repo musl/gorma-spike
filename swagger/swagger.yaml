@@ -1,0 +1,275 @@
+consumes:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+definitions:
+  PostPayload:
+    description: Post Payload is used to create posts.
+    example:
+      body: m
+      id: 1
+      published: false
+      title: 8a
+    properties:
+      body:
+        description: body of a post
+        example: m
+        minLength: 1
+        type: string
+      id:
+        description: surrogate key of a post
+        example: 1
+        minimum: 1
+        type: integer
+      published:
+        description: is the post published
+        example: false
+        type: boolean
+      title:
+        description: name of a post
+        example: 8a
+        minLength: 1
+        type: string
+    required:
+    - title
+    - body
+    - published
+    title: PostPayload
+    type: object
+  error:
+    description: Error response media type (default view)
+    example:
+      code: invalid_value
+      detail: Value of ID must be an integer
+      id: 3F1FKVRR
+      meta:
+        timestamp: 1.458609e+09
+      status: "400"
+    properties:
+      code:
+        description: an application-specific error code, expressed as a string value.
+        example: invalid_value
+        type: string
+      detail:
+        description: a human-readable explanation specific to this occurrence of the
+          problem.
+        example: Value of ID must be an integer
+        type: string
+      id:
+        description: a unique identifier for this particular occurrence of the problem.
+        example: 3F1FKVRR
+        type: string
+      meta:
+        additionalProperties: true
+        description: a meta object containing non-standard meta-information about
+          the error.
+        example:
+          timestamp: 1.458609e+09
+        type: object
+      status:
+        description: the HTTP status code applicable to this problem, expressed as
+          a string value.
+        example: "400"
+        type: string
+    title: 'Mediatype identifier: application/vnd.goa.error'
+    type: object
+  post:
+    description: post media type (default view)
+    example:
+      body: "6"
+      id: 1
+      published: false
+      title: "0"
+    properties:
+      body:
+        description: body of a post
+        example: "6"
+        minLength: 1
+        type: string
+      id:
+        description: Unique Post ID
+        example: 1
+        minimum: 1
+        type: integer
+      published:
+        description: is the post published
+        example: false
+        type: boolean
+      title:
+        description: name of a post
+        example: "0"
+        minLength: 1
+        type: string
+    required:
+    - id
+    - title
+    - body
+    - published
+    title: 'Mediatype identifier: application/vnd.hixio.goa.post'
+    type: object
+  postCollection:
+    description: postCollection is the media type for an array of post (default view)
+    example:
+    - body: "6"
+      id: 1
+      published: false
+      title: "0"
+    - body: "6"
+      id: 1
+      published: false
+      title: "0"
+    items:
+      $ref: '#/definitions/post'
+    title: 'Mediatype identifier: application/vnd.hixio.goa.post; type=collection'
+    type: array
+host: 127.0.0.1:8080
+info:
+  description: Mike Hix's Blog Service
+  version: ""
+paths:
+  /{filepath}:
+    get:
+      operationId: spa#/*filepath
+      parameters:
+      - description: Relative file path
+        in: path
+        name: filepath
+        required: true
+        type: string
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/error'
+      summary: Download static/
+  /api/v1/posts:
+    get:
+      description: lists all posts
+      operationId: post#list
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/postCollection'
+      summary: list post
+      tags:
+      - post
+    post:
+      description: creates a post
+      operationId: post#create
+      parameters:
+      - description: Post Payload is used to create posts.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/PostPayload'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/post'
+        "500":
+          description: Internal Server Error
+      summary: create post
+      tags:
+      - post
+  /api/v1/posts/{id}:
+    delete:
+      description: deletes a post
+      operationId: post#delete
+      parameters:
+      - description: Unique Post ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: delete post
+      tags:
+      - post
+    get:
+      description: shows a post
+      operationId: post#show
+      parameters:
+      - description: Unique Post ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/post'
+        "404":
+          description: Not Found
+      summary: show post
+      tags:
+      - post
+  /api/v1/status:
+    get:
+      description: A basic status-check endpoint
+      operationId: status#check
+      responses:
+        "200":
+          description: OK
+      summary: check status
+      tags:
+      - status
+  /swagger-ui/{filepath}:
+    get:
+      operationId: swagger#/swagger-ui/*filepath
+      parameters:
+      - description: Relative file path
+        in: path
+        name: filepath
+        required: true
+        type: string
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+        "404":
+          description: File not found
+          schema:
+            $ref: '#/definitions/error'
+      summary: Download swagger-ui/dist/
+  /swagger.json:
+    get:
+      operationId: swagger#/swagger.json
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+      summary: Download swagger/swagger.json
+produces:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+responses:
+  NoContent:
+    description: No Content
+  NotFound:
+    description: Not Found
+  OK:
+    description: OK
+    schema:
+      $ref: '#/definitions/post'
+swagger: "2.0"
