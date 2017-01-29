@@ -65,8 +65,9 @@ func MountPostController(service *goa.Service, ctrl PostController) {
 		}
 		return ctrl.Create(rctx)
 	}
+	h = handleSecurity("jwt", h, "api:access")
 	service.Mux.Handle("POST", "/api/v1/posts", ctrl.MuxHandler("Create", h, unmarshalCreatePostPayload))
-	service.LogInfo("mount", "ctrl", "Post", "action", "Create", "route", "POST /api/v1/posts")
+	service.LogInfo("mount", "ctrl", "Post", "action", "Create", "route", "POST /api/v1/posts", "security", "jwt")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -80,8 +81,9 @@ func MountPostController(service *goa.Service, ctrl PostController) {
 		}
 		return ctrl.Delete(rctx)
 	}
+	h = handleSecurity("jwt", h, "api:access")
 	service.Mux.Handle("DELETE", "/api/v1/posts/:id", ctrl.MuxHandler("Delete", h, nil))
-	service.LogInfo("mount", "ctrl", "Post", "action", "Delete", "route", "DELETE /api/v1/posts/:id")
+	service.LogInfo("mount", "ctrl", "Post", "action", "Delete", "route", "DELETE /api/v1/posts/:id", "security", "jwt")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -129,24 +131,24 @@ func unmarshalCreatePostPayload(ctx context.Context, service *goa.Service, req *
 	return nil
 }
 
-// SpaController is the controller interface for the Spa actions.
-type SpaController interface {
+// StaticController is the controller interface for the Static actions.
+type StaticController interface {
 	goa.Muxer
 	goa.FileServer
 }
 
-// MountSpaController "mounts" a Spa resource controller on the given service.
-func MountSpaController(service *goa.Service, ctrl SpaController) {
+// MountStaticController "mounts" a Static resource controller on the given service.
+func MountStaticController(service *goa.Service, ctrl StaticController) {
 	initService(service)
 	var h goa.Handler
 
 	h = ctrl.FileHandler("/*filepath", "static/")
 	service.Mux.Handle("GET", "/*filepath", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Spa", "files", "static/", "route", "GET /*filepath")
+	service.LogInfo("mount", "ctrl", "Static", "files", "static/", "route", "GET /*filepath")
 
 	h = ctrl.FileHandler("/", "static/index.html")
 	service.Mux.Handle("GET", "/", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Spa", "files", "static/index.html", "route", "GET /")
+	service.LogInfo("mount", "ctrl", "Static", "files", "static/index.html", "route", "GET /")
 }
 
 // StatusController is the controller interface for the Status actions.
@@ -198,4 +200,104 @@ func MountSwaggerController(service *goa.Service, ctrl SwaggerController) {
 	h = ctrl.FileHandler("/swagger-ui/", "swagger-ui/dist/index.html")
 	service.Mux.Handle("GET", "/swagger-ui/", ctrl.MuxHandler("serve", h, nil))
 	service.LogInfo("mount", "ctrl", "Swagger", "files", "swagger-ui/dist/index.html", "route", "GET /swagger-ui/")
+}
+
+// UserController is the controller interface for the User actions.
+type UserController interface {
+	goa.Muxer
+	Create(*CreateUserContext) error
+	Delete(*DeleteUserContext) error
+	List(*ListUserContext) error
+	Show(*ShowUserContext) error
+}
+
+// MountUserController "mounts" a User resource controller on the given service.
+func MountUserController(service *goa.Service, ctrl UserController) {
+	initService(service)
+	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewCreateUserContext(ctx, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*UserPayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.Create(rctx)
+	}
+	h = handleSecurity("jwt", h, "api:access")
+	service.Mux.Handle("POST", "/api/v1/users", ctrl.MuxHandler("Create", h, unmarshalCreateUserPayload))
+	service.LogInfo("mount", "ctrl", "User", "action", "Create", "route", "POST /api/v1/users", "security", "jwt")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewDeleteUserContext(ctx, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Delete(rctx)
+	}
+	h = handleSecurity("jwt", h, "api:access")
+	service.Mux.Handle("DELETE", "/api/v1/users/:id", ctrl.MuxHandler("Delete", h, nil))
+	service.LogInfo("mount", "ctrl", "User", "action", "Delete", "route", "DELETE /api/v1/users/:id", "security", "jwt")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewListUserContext(ctx, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.List(rctx)
+	}
+	h = handleSecurity("jwt", h, "api:access")
+	service.Mux.Handle("GET", "/api/v1/users", ctrl.MuxHandler("List", h, nil))
+	service.LogInfo("mount", "ctrl", "User", "action", "List", "route", "GET /api/v1/users", "security", "jwt")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewShowUserContext(ctx, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Show(rctx)
+	}
+	h = handleSecurity("jwt", h, "api:access")
+	service.Mux.Handle("GET", "/api/v1/users/:id", ctrl.MuxHandler("Show", h, nil))
+	service.LogInfo("mount", "ctrl", "User", "action", "Show", "route", "GET /api/v1/users/:id", "security", "jwt")
+}
+
+// unmarshalCreateUserPayload unmarshals the request body into the context request data Payload field.
+func unmarshalCreateUserPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &userPayload{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
 }

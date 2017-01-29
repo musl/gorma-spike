@@ -94,3 +94,78 @@ func (c *Client) DecodePostCollection(resp *http.Response) (PostCollection, erro
 	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
 	return decoded, err
 }
+
+// user media type (default view)
+//
+// Identifier: application/vnd.hixio.goa.user; view=default
+type User struct {
+	// email of a user
+	Email string `form:"email" json:"email" xml:"email"`
+	// Unique Post ID
+	ID int `form:"id" json:"id" xml:"id"`
+	// name of a user
+	Name string `form:"name" json:"name" xml:"name"`
+}
+
+// Validate validates the User media type instance.
+func (mt *User) Validate() (err error) {
+	if mt.Name == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
+	}
+	if mt.Email == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "email"))
+	}
+
+	if utf8.RuneCountInString(mt.Email) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.email`, mt.Email, utf8.RuneCountInString(mt.Email), 1, true))
+	}
+	if mt.ID < 1 {
+		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.id`, mt.ID, 1, true))
+	}
+	if utf8.RuneCountInString(mt.Name) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, mt.Name, utf8.RuneCountInString(mt.Name), 1, true))
+	}
+	return
+}
+
+// DecodeUser decodes the User instance encoded in resp body.
+func (c *Client) DecodeUser(resp *http.Response) (*User, error) {
+	var decoded User
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return &decoded, err
+}
+
+// userCollection is the media type for an array of user (default view)
+//
+// Identifier: application/vnd.hixio.goa.user; type=collection; view=default
+type UserCollection []*User
+
+// Validate validates the UserCollection media type instance.
+func (mt UserCollection) Validate() (err error) {
+	for _, e := range mt {
+		if e.Name == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response[*]`, "name"))
+		}
+		if e.Email == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response[*]`, "email"))
+		}
+
+		if utf8.RuneCountInString(e.Email) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].email`, e.Email, utf8.RuneCountInString(e.Email), 1, true))
+		}
+		if e.ID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response[*].id`, e.ID, 1, true))
+		}
+		if utf8.RuneCountInString(e.Name) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].name`, e.Name, utf8.RuneCountInString(e.Name), 1, true))
+		}
+	}
+	return
+}
+
+// DecodeUserCollection decodes the UserCollection instance encoded in resp body.
+func (c *Client) DecodeUserCollection(resp *http.Response) (UserCollection, error) {
+	var decoded UserCollection
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return decoded, err
+}

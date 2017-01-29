@@ -22,3 +22,9 @@ func PostHref(id interface{}) string {
 	paramid := strings.TrimLeftFunc(fmt.Sprintf("%v", id), func(r rune) bool { return r == '/' })
 	return fmt.Sprintf("/api/v1/posts/%v", paramid)
 }
+
+// UserHref returns the resource href.
+func UserHref(id interface{}) string {
+	paramid := strings.TrimLeftFunc(fmt.Sprintf("%v", id), func(r rune) bool { return r == '/' })
+	return fmt.Sprintf("/api/v1/users/%v", paramid)
+}

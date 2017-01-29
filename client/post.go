@@ -45,6 +45,9 @@ func (c *Client) NewCreatePostRequest(ctx context.Context, path string, payload 
 	if contentType != "*/*" {
 		header.Set("Content-Type", contentType)
 	}
+	if c.JWTSigner != nil {
+		c.JWTSigner.Sign(req)
+	}
 	return req, nil
 }
 
@@ -73,6 +76,9 @@ func (c *Client) NewDeletePostRequest(ctx context.Context, path string) (*http.R
 	if err != nil {
 		return nil, err
 	}
+	if c.JWTSigner != nil {
+		c.JWTSigner.Sign(req)
+	}
 	return req, nil
 }
 
@@ -81,7 +87,7 @@ func ListPostPath() string {
 	return fmt.Sprintf("/api/v1/posts")
 }
 
-// lists all posts
+// lists all publisged posts
 func (c *Client) ListPost(ctx context.Context, path string) (*http.Response, error) {
 	req, err := c.NewListPostRequest(ctx, path)
 	if err != nil {

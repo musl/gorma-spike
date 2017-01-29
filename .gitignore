@@ -1,2 +1,4 @@
 hixio
 hixio-cli
+*.key
+*.key.pub

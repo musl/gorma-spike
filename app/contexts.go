@@ -193,3 +193,153 @@ func (ctx *CheckStatusContext) OK(resp []byte) error {
 	_, err := ctx.ResponseData.Write(resp)
 	return err
 }
+
+// CreateUserContext provides the user create action context.
+type CreateUserContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Payload *UserPayload
+}
+
+// NewCreateUserContext parses the incoming request URL and body, performs validations and creates the
+// context used by the user controller create action.
+func NewCreateUserContext(ctx context.Context, service *goa.Service) (*CreateUserContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	rctx := CreateUserContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// Created sends a HTTP response with status code 201.
+func (ctx *CreateUserContext) Created(r *User) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.hixio.goa.user")
+	return ctx.ResponseData.Service.Send(ctx.Context, 201, r)
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *CreateUserContext) InternalServerError(r string) error {
+	ctx.ResponseData.Header().Set("Content-Type", "")
+	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
+}
+
+// DeleteUserContext provides the user delete action context.
+type DeleteUserContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	ID int
+}
+
+// NewDeleteUserContext parses the incoming request URL and body, performs validations and creates the
+// context used by the user controller delete action.
+func NewDeleteUserContext(ctx context.Context, service *goa.Service) (*DeleteUserContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	rctx := DeleteUserContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramID := req.Params["id"]
+	if len(paramID) > 0 {
+		rawID := paramID[0]
+		if id, err2 := strconv.Atoi(rawID); err2 == nil {
+			rctx.ID = id
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("id", rawID, "integer"))
+		}
+		if rctx.ID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`id`, rctx.ID, 1, true))
+		}
+	}
+	return &rctx, err
+}
+
+// NoContent sends a HTTP response with status code 204.
+func (ctx *DeleteUserContext) NoContent() error {
+	ctx.ResponseData.WriteHeader(204)
+	return nil
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *DeleteUserContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *DeleteUserContext) InternalServerError(r string) error {
+	ctx.ResponseData.Header().Set("Content-Type", "")
+	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
+}
+
+// ListUserContext provides the user list action context.
+type ListUserContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewListUserContext parses the incoming request URL and body, performs validations and creates the
+// context used by the user controller list action.
+func NewListUserContext(ctx context.Context, service *goa.Service) (*ListUserContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	rctx := ListUserContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *ListUserContext) OK(r UserCollection) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.hixio.goa.user; type=collection")
+	if r == nil {
+		r = UserCollection{}
+	}
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// ShowUserContext provides the user show action context.
+type ShowUserContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	ID int
+}
+
+// NewShowUserContext parses the incoming request URL and body, performs validations and creates the
+// context used by the user controller show action.
+func NewShowUserContext(ctx context.Context, service *goa.Service) (*ShowUserContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	rctx := ShowUserContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramID := req.Params["id"]
+	if len(paramID) > 0 {
+		rawID := paramID[0]
+		if id, err2 := strconv.Atoi(rawID); err2 == nil {
+			rctx.ID = id
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("id", rawID, "integer"))
+		}
+		if rctx.ID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`id`, rctx.ID, 1, true))
+		}
+	}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *ShowUserContext) OK(r *User) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.hixio.goa.user")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *ShowUserContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}

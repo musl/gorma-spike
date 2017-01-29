@@ -1,14 +1,15 @@
 
 BIN := hixio
 CLI := $(BIN)-cli
+MIG := $(BIN)-migrate
 
 .PHONY: all clean cli generate run
 
-all: clean generate $(BIN) cli run
+all: clean generate $(BIN) $(CLI) $(MIG) run
 
 clean:
 	go clean .
-	rm -f $(CLI)
+	rm -f $(CLI) $(MIG)
 
 generate:
 	goagen app --design=github.com/musl/hixio/design
@@ -30,5 +31,7 @@ $(CLI): $(BIN)
 	go clean github.com/musl/hixio/tool/hixio-cli
 	go build github.com/musl/hixio/tool/hixio-cli
 
-cli: $(CLI)
+$(MIG): $(BIN)
+	go clean github.com/musl/hixio/db/hixio-migrate
+	go build github.com/musl/hixio/db/hixio-migrate
 

@@ -111,3 +111,101 @@ func (ut *PostPayload) Validate() (err error) {
 	}
 	return
 }
+
+// Post Payload is used to create users.
+type userPayload struct {
+	// email of a user
+	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
+	// surrogate key of a user
+	ID *int `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	// name of a user
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// password of the user
+	Password *string `form:"password,omitempty" json:"password,omitempty" xml:"password,omitempty"`
+}
+
+// Validate validates the userPayload type instance.
+func (ut *userPayload) Validate() (err error) {
+	if ut.Name == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
+	}
+	if ut.Email == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "email"))
+	}
+	if ut.Password == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "password"))
+	}
+
+	if ut.Email != nil {
+		if utf8.RuneCountInString(*ut.Email) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.email`, *ut.Email, utf8.RuneCountInString(*ut.Email), 1, true))
+		}
+	}
+	if ut.ID != nil {
+		if *ut.ID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.id`, *ut.ID, 1, true))
+		}
+	}
+	if ut.Name != nil {
+		if utf8.RuneCountInString(*ut.Name) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, *ut.Name, utf8.RuneCountInString(*ut.Name), 1, true))
+		}
+	}
+	return
+}
+
+// Publicize creates UserPayload from userPayload
+func (ut *userPayload) Publicize() *UserPayload {
+	var pub UserPayload
+	if ut.Email != nil {
+		pub.Email = *ut.Email
+	}
+	if ut.ID != nil {
+		pub.ID = ut.ID
+	}
+	if ut.Name != nil {
+		pub.Name = *ut.Name
+	}
+	if ut.Password != nil {
+		pub.Password = *ut.Password
+	}
+	return &pub
+}
+
+// Post Payload is used to create users.
+type UserPayload struct {
+	// email of a user
+	Email string `form:"email" json:"email" xml:"email"`
+	// surrogate key of a user
+	ID *int `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	// name of a user
+	Name string `form:"name" json:"name" xml:"name"`
+	// password of the user
+	Password string `form:"password" json:"password" xml:"password"`
+}
+
+// Validate validates the UserPayload type instance.
+func (ut *UserPayload) Validate() (err error) {
+	if ut.Name == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
+	}
+	if ut.Email == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "email"))
+	}
+	if ut.Password == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "password"))
+	}
+
+	if utf8.RuneCountInString(ut.Email) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.email`, ut.Email, utf8.RuneCountInString(ut.Email), 1, true))
+	}
+	if ut.ID != nil {
+		if *ut.ID < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.id`, *ut.ID, 1, true))
+		}
+	}
+	if utf8.RuneCountInString(ut.Name) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, ut.Name, utf8.RuneCountInString(ut.Name), 1, true))
+	}
+	return
+}

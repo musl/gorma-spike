@@ -7,14 +7,14 @@ definitions:
   PostPayload:
     description: Post Payload is used to create posts.
     example:
-      body: m
+      body: c
       id: 1
-      published: false
-      title: 8a
+      published: true
+      title: "02"
     properties:
       body:
         description: body of a post
-        example: m
+        example: c
         minLength: 1
         type: string
       id:
@@ -24,11 +24,11 @@ definitions:
         type: integer
       published:
         description: is the post published
-        example: false
+        example: true
         type: boolean
       title:
         description: name of a post
-        example: 8a
+        example: "02"
         minLength: 1
         type: string
     required:
@@ -36,6 +36,39 @@ definitions:
     - body
     - published
     title: PostPayload
+    type: object
+  UserPayload:
+    description: Post Payload is used to create users.
+    example:
+      email: 0ol
+      id: 1
+      name: bl4
+      password: Ipsam odit aut.
+    properties:
+      email:
+        description: email of a user
+        example: 0ol
+        minLength: 1
+        type: string
+      id:
+        description: surrogate key of a user
+        example: 1
+        minimum: 1
+        type: integer
+      name:
+        description: name of a user
+        example: bl4
+        minLength: 1
+        type: string
+      password:
+        description: password of the user
+        example: Ipsam odit aut.
+        type: string
+    required:
+    - name
+    - email
+    - password
+    title: UserPayload
     type: object
   error:
     description: Error response media type (default view)
@@ -123,6 +156,44 @@ definitions:
       $ref: '#/definitions/post'
     title: 'Mediatype identifier: application/vnd.hixio.goa.post; type=collection'
     type: array
+  user:
+    description: user media type (default view)
+    example:
+      email: m
+      id: 1
+      name: g8a
+    properties:
+      email:
+        description: email of a user
+        example: m
+        minLength: 1
+        type: string
+      id:
+        description: Unique Post ID
+        example: 1
+        minimum: 1
+        type: integer
+      name:
+        description: name of a user
+        example: g8a
+        minLength: 1
+        type: string
+    required:
+    - id
+    - name
+    - email
+    title: 'Mediatype identifier: application/vnd.hixio.goa.user'
+    type: object
+  userCollection:
+    description: userCollection is the media type for an array of user (default view)
+    example:
+    - email: m
+      id: 1
+      name: g8a
+    items:
+      $ref: '#/definitions/user'
+    title: 'Mediatype identifier: application/vnd.hixio.goa.user; type=collection'
+    type: array
 host: 127.0.0.1:8080
 info:
   description: Mike Hix's Blog Service
@@ -130,7 +201,7 @@ info:
 paths:
   /{filepath}:
     get:
-      operationId: spa#/*filepath
+      operationId: static#/*filepath
       parameters:
       - description: Relative file path
         in: path
@@ -149,7 +220,7 @@ paths:
       summary: Download static/
   /api/v1/posts:
     get:
-      description: lists all posts
+      description: lists all publisged posts
       operationId: post#list
       responses:
         "200":
@@ -160,7 +231,11 @@ paths:
       tags:
       - post
     post:
-      description: creates a post
+      description: |-
+        creates a post
+
+        Required security scopes:
+          * `api:access`
       operationId: post#create
       parameters:
       - description: Post Payload is used to create posts.
@@ -176,12 +251,19 @@ paths:
             $ref: '#/definitions/post'
         "500":
           description: Internal Server Error
+      security:
+      - jwt:
+        - api:access
       summary: create post
       tags:
       - post
   /api/v1/posts/{id}:
     delete:
-      description: deletes a post
+      description: |-
+        deletes a post
+
+        Required security scopes:
+          * `api:access`
       operationId: post#delete
       parameters:
       - description: Unique Post ID
@@ -197,6 +279,9 @@ paths:
           description: Not Found
         "500":
           description: Internal Server Error
+      security:
+      - jwt:
+        - api:access
       summary: delete post
       tags:
       - post
@@ -230,6 +315,107 @@ paths:
       summary: check status
       tags:
       - status
+  /api/v1/users:
+    get:
+      description: |-
+        lists all users
+
+        Required security scopes:
+          * `api:access`
+      operationId: user#list
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/userCollection'
+      security:
+      - jwt:
+        - api:access
+      summary: list user
+      tags:
+      - user
+    post:
+      description: |-
+        creates a user
+
+        Required security scopes:
+          * `api:access`
+      operationId: user#create
+      parameters:
+      - description: Post Payload is used to create users.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/UserPayload'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user'
+        "500":
+          description: Internal Server Error
+      security:
+      - jwt:
+        - api:access
+      summary: create user
+      tags:
+      - user
+  /api/v1/users/{id}:
+    delete:
+      description: |-
+        deletes a user
+
+        Required security scopes:
+          * `api:access`
+      operationId: user#delete
+      parameters:
+      - description: Unique Post ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - jwt:
+        - api:access
+      summary: delete user
+      tags:
+      - user
+    get:
+      description: |-
+        shows a user
+
+        Required security scopes:
+          * `api:access`
+      operationId: user#show
+      parameters:
+      - description: Unique Post ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user'
+        "404":
+          description: Not Found
+      security:
+      - jwt:
+        - api:access
+      summary: show user
+      tags:
+      - user
   /swagger-ui/{filepath}:
     get:
       operationId: swagger#/swagger-ui/*filepath
@@ -272,4 +458,14 @@ responses:
     description: OK
     schema:
       $ref: '#/definitions/post'
+securityDefinitions:
+  jwt:
+    description: |2-
+
+
+      **Security Scopes**:
+        * `api:access`: API access
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

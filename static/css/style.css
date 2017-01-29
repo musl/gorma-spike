@@ -1,2 +1,14 @@
+html, body { font-size: 12pt; }
+h1 {
+  font-size: 18pt;
+  border-bottom: 1px #ddd dotted;
+}
+h2 {
+  font-size: 16pt;
+}
+h3 {
+  font-size: 14pt;
+}
 .success { color: #66cc66; }
 .error { color: #cc6666; }
+.warning { color: #cccc66; }

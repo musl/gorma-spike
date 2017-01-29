@@ -9,7 +9,6 @@ requirejs.config({
   }
 });
 
-// Post List
 requirejs([
   'client',
   'ractive',
@@ -31,7 +30,28 @@ requirejs([
             .catch(function() {
               console.log('post deletion failed for id: ' + this.get('id'));
             });
-        }
+        },
+        edit: function() {
+          console.log('edit');
+        },
+        update_post: function() {
+          console.log('Updating post: ', this.get());
+          client().updatePost('/api/v1/posts', this.get('post'))
+            .then(function(response) {
+              self.set({
+                message: 'success',
+                message_class: 'success',
+              });
+              self.fire('success');
+            })
+            .catch(function(error) {
+              self.set({
+                message: error.statusText,
+                message_class: 'error',
+              });
+              self.fire('error');
+            });
+        },
       });
     },
   });
@@ -57,8 +77,7 @@ requirejs([
       });
     },
     onrender: function() {
-      this.on('fetch', this.fetch);
-      this.fetch(); 
+      this.on('fetch', function() { this.fetch(); });
     },
   });
 
@@ -72,22 +91,29 @@ requirejs([
     },
     check: function() {
       var self = this;
-      client().checkStatus('/api/v1/status')
-        .then(function(response) {
-          self.set({
-            status: response.statusText,
-            status_class: 'success',
+
+      this.set({
+        status: 'checking...',
+        status_class: 'warning',
+      });
+
+      window.setTimeout(function() {
+        client().checkStatus('/api/v1/status')
+          .then(function(response) {
+            self.set({
+              status: response.statusText,
+              status_class: 'success',
+            });
+          }).catch(function(error) {
+            self.set({
+              status: "Not OK",
+              status_class: 'error',
+            });
           });
-        }).catch(function(error) {
-          self.set({
-            status: "Not OK",
-            status_class: 'error',
-          });
-        });
+      }, 1000);
     },
     onrender: function() {
-      this.on('check', this.check);
-      this.check();
+      this.on('check', function() { this.check(); });
     },
   });
 
@@ -133,9 +159,10 @@ requirejs([
   var post_form = new HixIO.PostForm({ el: '#post_form' });
   var api_status = new HixIO.APIStatus({ el: '#api_status' });
 
+  post_list.fire('fetch');
+  api_status.fire('check');
   post_form.on({
     success: function() {
-      console.log('firing fetch');
       post_list.fire('fetch');
     }
   });

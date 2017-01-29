@@ -10,6 +10,28 @@ var _ = StorageGroup("TheDatabase", func() {
 	Store("postgres", gorma.Postgres, func() {
 		Description("This is the postgres relational store")
 
+		Model("User", func() {
+			Description("This is the User model")
+
+			RendersTo(UserMedia)
+			BuildsFrom(func() {
+				Payload("user", "create")
+			})
+
+			Field("id", gorma.Integer, func() {
+				Description("Surrogate key for User model")
+				PrimaryKey()
+			})
+
+			Field("Name", gorma.String, func() {})
+			Field("Email", gorma.String, func() {})
+			Field("Password", gorma.String, func() {})
+
+			Field("created_at", gorma.Timestamp, func() {})
+			Field("updated_at", gorma.Timestamp, func() {})
+			Field("deleted_at", gorma.NullableTimestamp, func() {})
+		})
+
 		Model("Post", func() {
 			Description("This is the Post model")
 
@@ -22,12 +44,15 @@ var _ = StorageGroup("TheDatabase", func() {
 				Description("Surrogate key for Post model")
 				PrimaryKey()
 			})
+
 			Field("title", gorma.String, func() {})
 			Field("body", gorma.String, func() {})
 			Field("published", gorma.Boolean, func() {})
+
 			Field("created_at", gorma.Timestamp, func() {})
 			Field("updated_at", gorma.Timestamp, func() {})
 			Field("deleted_at", gorma.NullableTimestamp, func() {})
 		})
+
 	})
 })
