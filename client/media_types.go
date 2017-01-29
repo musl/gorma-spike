@@ -44,9 +44,6 @@ func (mt *Post) Validate() (err error) {
 	if utf8.RuneCountInString(mt.Body) < 1 {
 		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.body`, mt.Body, utf8.RuneCountInString(mt.Body), 1, true))
 	}
-	if mt.ID < 1 {
-		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.id`, mt.ID, 1, true))
-	}
 	if utf8.RuneCountInString(mt.Title) < 1 {
 		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.title`, mt.Title, utf8.RuneCountInString(mt.Title), 1, true))
 	}
@@ -77,9 +74,6 @@ func (mt PostCollection) Validate() (err error) {
 
 		if utf8.RuneCountInString(e.Body) < 1 {
 			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].body`, e.Body, utf8.RuneCountInString(e.Body), 1, true))
-		}
-		if e.ID < 1 {
-			err = goa.MergeErrors(err, goa.InvalidRangeError(`response[*].id`, e.ID, 1, true))
 		}
 		if utf8.RuneCountInString(e.Title) < 1 {
 			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].title`, e.Title, utf8.RuneCountInString(e.Title), 1, true))
@@ -119,9 +113,6 @@ func (mt *User) Validate() (err error) {
 	if utf8.RuneCountInString(mt.Email) < 1 {
 		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.email`, mt.Email, utf8.RuneCountInString(mt.Email), 1, true))
 	}
-	if mt.ID < 1 {
-		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.id`, mt.ID, 1, true))
-	}
 	if utf8.RuneCountInString(mt.Name) < 1 {
 		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, mt.Name, utf8.RuneCountInString(mt.Name), 1, true))
 	}
@@ -152,9 +143,6 @@ func (mt UserCollection) Validate() (err error) {
 
 		if utf8.RuneCountInString(e.Email) < 1 {
 			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].email`, e.Email, utf8.RuneCountInString(e.Email), 1, true))
-		}
-		if e.ID < 1 {
-			err = goa.MergeErrors(err, goa.InvalidRangeError(`response[*].id`, e.ID, 1, true))
 		}
 		if utf8.RuneCountInString(e.Name) < 1 {
 			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].name`, e.Name, utf8.RuneCountInString(e.Name), 1, true))

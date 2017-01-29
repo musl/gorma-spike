@@ -18,6 +18,13 @@ import (
 )
 
 type (
+	// JWTAuthCommand is the command line data structure for the jwt action of auth
+	JWTAuthCommand struct {
+		Payload     string
+		ContentType string
+		PrettyPrint bool
+	}
+
 	// CreatePostCommand is the command line data structure for the create action of post
 	CreatePostCommand struct {
 		Payload     string
@@ -112,10 +119,9 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 Payload example:
 
 {
-   "body": "c",
-   "id": 1,
-   "published": true,
-   "title": "02"
+   "body": "n0o",
+   "published": false,
+   "title": "hb"
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
@@ -131,10 +137,9 @@ Payload example:
 Payload example:
 
 {
-   "email": "0ol",
-   "id": 1,
-   "name": "bl4",
-   "password": "Ipsam odit aut."
+   "email": "4",
+   "name": "c6m",
+   "password": "Eos voluptatem ut."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
 	}
@@ -166,49 +171,71 @@ Payload example:
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
-		Use:   "list",
-		Short: `list action`,
+		Use:   "jwt",
+		Short: `Creates a valid JWT`,
 	}
-	tmp6 := new(ListPostCommand)
+	tmp6 := new(JWTAuthCommand)
 	sub = &cobra.Command{
-		Use:   `post ["/api/v1/posts"]`,
-		Short: `A blog post`,
-		RunE:  func(cmd *cobra.Command, args []string) error { return tmp6.Run(c, args) },
+		Use:   `auth ["/api/v1/auth"]`,
+		Short: `An authorization service`,
+		Long: `An authorization service
+
+Payload example:
+
+{
+   "email": "c",
+   "password": "Est ratione similique."
+}`,
+		RunE: func(cmd *cobra.Command, args []string) error { return tmp6.Run(c, args) },
 	}
 	tmp6.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp6.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp7 := new(ListUserCommand)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "list",
+		Short: `list action`,
+	}
+	tmp7 := new(ListPostCommand)
 	sub = &cobra.Command{
-		Use:   `user ["/api/v1/users"]`,
-		Short: `A User`,
+		Use:   `post ["/api/v1/posts"]`,
+		Short: `A blog post`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp7.Run(c, args) },
 	}
 	tmp7.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp7.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	tmp8 := new(ListUserCommand)
+	sub = &cobra.Command{
+		Use:   `user ["/api/v1/users"]`,
+		Short: `A User`,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp8.Run(c, args) },
+	}
+	tmp8.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp8.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
 		Use:   "show",
 		Short: `show action`,
 	}
-	tmp8 := new(ShowPostCommand)
+	tmp9 := new(ShowPostCommand)
 	sub = &cobra.Command{
 		Use:   `post ["/api/v1/posts/ID"]`,
 		Short: `A blog post`,
-		RunE:  func(cmd *cobra.Command, args []string) error { return tmp8.Run(c, args) },
-	}
-	tmp8.RegisterFlags(sub, c)
-	sub.PersistentFlags().BoolVar(&tmp8.PrettyPrint, "pp", false, "Pretty print response body")
-	command.AddCommand(sub)
-	tmp9 := new(ShowUserCommand)
-	sub = &cobra.Command{
-		Use:   `user ["/api/v1/users/ID"]`,
-		Short: `A User`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp9.Run(c, args) },
 	}
 	tmp9.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp9.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	tmp10 := new(ShowUserCommand)
+	sub = &cobra.Command{
+		Use:   `user ["/api/v1/users/ID"]`,
+		Short: `A User`,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp10.Run(c, args) },
+	}
+	tmp10.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp10.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
 
@@ -430,6 +457,39 @@ found:
 	}
 
 	return nil
+}
+
+// Run makes the HTTP request corresponding to the JWTAuthCommand command.
+func (cmd *JWTAuthCommand) Run(c *client.Client, args []string) error {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = "/api/v1/auth"
+	}
+	var payload client.AuthPayload
+	if cmd.Payload != "" {
+		err := json.Unmarshal([]byte(cmd.Payload), &payload)
+		if err != nil {
+			return fmt.Errorf("failed to deserialize payload: %s", err)
+		}
+	}
+	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	ctx := goa.WithLogger(context.Background(), logger)
+	resp, err := c.JWTAuth(ctx, path, &payload, cmd.ContentType)
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
+	return nil
+}
+
+// RegisterFlags registers the command flags with the command line.
+func (cmd *JWTAuthCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
+	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
 }
 
 // Run makes the HTTP request corresponding to the CreatePostCommand command.

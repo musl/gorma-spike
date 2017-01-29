@@ -6,10 +6,7 @@ import (
 )
 
 var UserPayload = Type("UserPayload", func() {
-	Description("Post Payload is used to create users.")
-	Attribute("id", Integer, "surrogate key of a user", func() {
-		Minimum(1)
-	})
+	Description("User Payload is used to create users.")
 	Attribute("name", String, "name of a user", func() {
 		MinLength(1)
 	})

@@ -1,34 +1,45 @@
 consumes:
 - application/json
-- application/xml
-- application/gob
-- application/x-gob
 definitions:
-  PostPayload:
-    description: Post Payload is used to create posts.
+  AuthPayload:
+    description: Auth Payload is used to auth users.
     example:
-      body: c
-      id: 1
-      published: true
-      title: "02"
+      email: c
+      password: Est ratione similique.
     properties:
-      body:
-        description: body of a post
+      email:
+        description: email of a user
         example: c
         minLength: 1
         type: string
-      id:
-        description: surrogate key of a post
-        example: 1
-        minimum: 1
-        type: integer
+      password:
+        description: password of the user
+        example: Est ratione similique.
+        type: string
+    required:
+    - email
+    - password
+    title: AuthPayload
+    type: object
+  PostPayload:
+    description: Post Payload is used to create posts.
+    example:
+      body: n0o
+      published: false
+      title: hb
+    properties:
+      body:
+        description: body of a post
+        example: n0o
+        minLength: 1
+        type: string
       published:
         description: is the post published
-        example: true
+        example: false
         type: boolean
       title:
         description: name of a post
-        example: "02"
+        example: hb
         minLength: 1
         type: string
     required:
@@ -38,31 +49,25 @@ definitions:
     title: PostPayload
     type: object
   UserPayload:
-    description: Post Payload is used to create users.
+    description: User Payload is used to create users.
     example:
-      email: 0ol
-      id: 1
-      name: bl4
-      password: Ipsam odit aut.
+      email: "4"
+      name: c6m
+      password: Eos voluptatem ut.
     properties:
       email:
         description: email of a user
-        example: 0ol
+        example: "4"
         minLength: 1
         type: string
-      id:
-        description: surrogate key of a user
-        example: 1
-        minimum: 1
-        type: integer
       name:
         description: name of a user
-        example: bl4
+        example: c6m
         minLength: 1
         type: string
       password:
         description: password of the user
-        example: Ipsam odit aut.
+        example: Eos voluptatem ut.
         type: string
     required:
     - name
@@ -111,7 +116,7 @@ definitions:
     description: post media type (default view)
     example:
       body: "6"
-      id: 1
+      id: 1.7503025e+18
       published: false
       title: "0"
     properties:
@@ -122,8 +127,8 @@ definitions:
         type: string
       id:
         description: Unique Post ID
-        example: 1
-        minimum: 1
+        example: 1.7503025e+18
+        format: int64
         type: integer
       published:
         description: is the post published
@@ -145,11 +150,11 @@ definitions:
     description: postCollection is the media type for an array of post (default view)
     example:
     - body: "6"
-      id: 1
+      id: 1.7503025e+18
       published: false
       title: "0"
     - body: "6"
-      id: 1
+      id: 1.7503025e+18
       published: false
       title: "0"
     items:
@@ -160,7 +165,7 @@ definitions:
     description: user media type (default view)
     example:
       email: m
-      id: 1
+      id: 7.0499036e+18
       name: g8a
     properties:
       email:
@@ -170,8 +175,8 @@ definitions:
         type: string
       id:
         description: Unique Post ID
-        example: 1
-        minimum: 1
+        example: 7.0499036e+18
+        format: int64
         type: integer
       name:
         description: name of a user
@@ -188,7 +193,7 @@ definitions:
     description: userCollection is the media type for an array of user (default view)
     example:
     - email: m
-      id: 1
+      id: 7.0499036e+18
       name: g8a
     items:
       $ref: '#/definitions/user'
@@ -218,6 +223,29 @@ paths:
           schema:
             $ref: '#/definitions/error'
       summary: Download static/
+  /api/v1/auth:
+    post:
+      description: Creates a valid JWT
+      operationId: auth#jwt
+      parameters:
+      - description: Auth Payload is used to auth users.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/AuthPayload'
+      responses:
+        "204":
+          description: No Content
+          headers:
+            Authorization:
+              description: Generated JWT
+              type: string
+        "401":
+          description: Unauthorized
+      summary: jwt auth
+      tags:
+      - auth
   /api/v1/posts:
     get:
       description: lists all publisged posts
@@ -268,7 +296,6 @@ paths:
       parameters:
       - description: Unique Post ID
         in: path
-        minimum: 1
         name: id
         required: true
         type: integer
@@ -291,7 +318,6 @@ paths:
       parameters:
       - description: Unique Post ID
         in: path
-        minimum: 1
         name: id
         required: true
         type: integer
@@ -342,7 +368,7 @@ paths:
           * `api:access`
       operationId: user#create
       parameters:
-      - description: Post Payload is used to create users.
+      - description: User Payload is used to create users.
         in: body
         name: payload
         required: true
@@ -372,7 +398,6 @@ paths:
       parameters:
       - description: Unique Post ID
         in: path
-        minimum: 1
         name: id
         required: true
         type: integer
@@ -399,7 +424,6 @@ paths:
       parameters:
       - description: Unique Post ID
         in: path
-        minimum: 1
         name: id
         required: true
         type: integer
@@ -446,9 +470,6 @@ paths:
       summary: Download swagger/swagger.json
 produces:
 - application/json
-- application/xml
-- application/gob
-- application/x-gob
 responses:
   NoContent:
     description: No Content
@@ -458,6 +479,8 @@ responses:
     description: OK
     schema:
       $ref: '#/definitions/post'
+  Unauthorized:
+    description: Unauthorized
 securityDefinitions:
   jwt:
     description: |2-

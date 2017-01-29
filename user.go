@@ -35,14 +35,9 @@ func (c *UserController) Show(ctx *app.ShowUserContext) error {
 
 func (c *UserController) Create(ctx *app.CreateUserContext) error {
 	db := models.NewUserDB(ctx.Value("db").(*gorm.DB))
-	p := ctx.Payload
-	user := models.User{
-		Name:     p.Name,
-		Email:    p.Email,
-		Password: p.Password,
-	}
+	user := models.UserFromUserPayload(ctx.Payload)
 
-	err := db.Add(ctx, &user)
+	err := db.Add(ctx, user)
 	if err != nil {
 		return ctx.InternalServerError(fmt.Sprintf("%v", err))
 	}

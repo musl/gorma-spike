@@ -18,6 +18,37 @@ import (
 	"strconv"
 )
 
+// JWTAuthContext provides the auth jwt action context.
+type JWTAuthContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Payload *AuthPayload
+}
+
+// NewJWTAuthContext parses the incoming request URL and body, performs validations and creates the
+// context used by the auth controller jwt action.
+func NewJWTAuthContext(ctx context.Context, service *goa.Service) (*JWTAuthContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	rctx := JWTAuthContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// NoContent sends a HTTP response with status code 204.
+func (ctx *JWTAuthContext) NoContent() error {
+	ctx.ResponseData.WriteHeader(204)
+	return nil
+}
+
+// Unauthorized sends a HTTP response with status code 401.
+func (ctx *JWTAuthContext) Unauthorized() error {
+	ctx.ResponseData.WriteHeader(401)
+	return nil
+}
+
 // CreatePostContext provides the post create action context.
 type CreatePostContext struct {
 	context.Context
@@ -72,9 +103,6 @@ func NewDeletePostContext(ctx context.Context, service *goa.Service) (*DeletePos
 			rctx.ID = id
 		} else {
 			err = goa.MergeErrors(err, goa.InvalidParamTypeError("id", rawID, "integer"))
-		}
-		if rctx.ID < 1 {
-			err = goa.MergeErrors(err, goa.InvalidRangeError(`id`, rctx.ID, 1, true))
 		}
 	}
 	return &rctx, err
@@ -148,9 +176,6 @@ func NewShowPostContext(ctx context.Context, service *goa.Service) (*ShowPostCon
 			rctx.ID = id
 		} else {
 			err = goa.MergeErrors(err, goa.InvalidParamTypeError("id", rawID, "integer"))
-		}
-		if rctx.ID < 1 {
-			err = goa.MergeErrors(err, goa.InvalidRangeError(`id`, rctx.ID, 1, true))
 		}
 	}
 	return &rctx, err
@@ -249,9 +274,6 @@ func NewDeleteUserContext(ctx context.Context, service *goa.Service) (*DeleteUse
 		} else {
 			err = goa.MergeErrors(err, goa.InvalidParamTypeError("id", rawID, "integer"))
 		}
-		if rctx.ID < 1 {
-			err = goa.MergeErrors(err, goa.InvalidRangeError(`id`, rctx.ID, 1, true))
-		}
 	}
 	return &rctx, err
 }
@@ -324,9 +346,6 @@ func NewShowUserContext(ctx context.Context, service *goa.Service) (*ShowUserCon
 			rctx.ID = id
 		} else {
 			err = goa.MergeErrors(err, goa.InvalidParamTypeError("id", rawID, "integer"))
-		}
-		if rctx.ID < 1 {
-			err = goa.MergeErrors(err, goa.InvalidRangeError(`id`, rctx.ID, 1, true))
 		}
 	}
 	return &rctx, err

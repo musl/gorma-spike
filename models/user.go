@@ -153,9 +153,6 @@ func (m *UserDB) Delete(ctx context.Context, id int) error {
 func UserFromUserPayload(payload *app.UserPayload) *User {
 	user := &User{}
 	user.Email = payload.Email
-	if payload.ID != nil {
-		user.ID = *payload.ID
-	}
 	user.Name = payload.Name
 	user.Password = payload.Password
 
@@ -173,9 +170,6 @@ func (m *UserDB) UpdateFromUserPayload(ctx context.Context, payload *app.UserPay
 		return err
 	}
 	obj.Email = payload.Email
-	if payload.ID != nil {
-		obj.ID = *payload.ID
-	}
 	obj.Name = payload.Name
 	obj.Password = payload.Password
 

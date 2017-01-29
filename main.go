@@ -38,6 +38,10 @@ func main() {
 	auth_middleware := jwt.New(jwt.NewSimpleResolver(keys), ValidateJWT(), app.NewJWTSecurity())
 	app.UseJWTMiddleware(service, auth_middleware)
 
+	// Mount "auth" controller
+	auth_controller := NewAuthController(service, "jwt.key")
+	app.MountAuthController(service, auth_controller)
+
 	// Mount "post" controller
 	post_controller := NewPostController(service)
 	app.MountPostController(service, post_controller)

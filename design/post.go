@@ -7,9 +7,6 @@ import (
 
 var PostPayload = Type("PostPayload", func() {
 	Description("Post Payload is used to create posts.")
-	Attribute("id", Integer, "surrogate key of a post", func() {
-		Minimum(1)
-	})
 	Attribute("title", String, "name of a post", func() {
 		MinLength(1)
 	})

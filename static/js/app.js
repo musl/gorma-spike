@@ -16,16 +16,29 @@ requirejs([
   'rv!tmpl/post_list',
   'rv!tmpl/post_form',
   'rv!tmpl/api_status',
-], function (client, Ractive, post_tmpl, post_list_tmpl, post_form_tmpl, api_status_tmpl) {
+  'rv!tmpl/auth_form',
+], function (client, Ractive, post_tmpl, post_list_tmpl, post_form_tmpl, api_status_tmpl, auth_form_tmpl) {
 
   var HixIO = {};
 
   HixIO.PostItem = Ractive.extend({
     template: post_tmpl,
+    data: function() {
+      return {
+        message: '',
+        message_class: '',
+      };
+    },
     onrender: function() {
       this.on({
         delete: function() {
-          client().deletePost('/api/v1/posts/' + this.get('id'))
+          opts = {
+            headers: {}
+          }
+          if(HixIO.token) {
+            opts['headers']['authorization'] = HixIO.token
+          }
+          client().deletePost('/api/v1/posts/' + this.get('id'), opts)
             .then(this.teardown.bind(this))
             .catch(function() {
               console.log('post deletion failed for id: ' + this.get('id'));
@@ -36,7 +49,13 @@ requirejs([
         },
         update_post: function() {
           console.log('Updating post: ', this.get());
-          client().updatePost('/api/v1/posts', this.get('post'))
+          opts = {
+            headers: {}
+          }
+          if(HixIO.token) {
+            opts['headers']['authorization'] = HixIO.token
+          }
+          client().updatePost('/api/v1/posts', this.get('post'), opts)
             .then(function(response) {
               self.set({
                 message: 'success',
@@ -122,9 +141,9 @@ requirejs([
     data: function() {
       return {
         post: {
-          title: '',
-          body: '',
-          published: false,
+          title: 'wat',
+          body: 'wat',
+          published: true,
         },
         message: '',
       };
@@ -135,8 +154,52 @@ requirejs([
           var self;
 
           self = this;
-          client().createPost('/api/v1/posts', this.get('post'))
+          opts = {
+            headers: {}
+          }
+          if(HixIO.token) {
+            opts['headers']['authorization'] = HixIO.token
+          }
+          client().createPost('/api/v1/posts', this.get('post'), opts)
             .then(function(response) {
+              self.set({
+                message: 'success',
+                message_class: 'success',
+              });
+              self.fire('success');
+            })
+            .catch(function(error) {
+              self.set({
+                message: error.statusText,
+                message_class: 'error',
+              });
+              self.fire('error');
+            });
+        }
+      });
+    },
+  });
+
+  HixIO.AuthForm = Ractive.extend({
+    template: auth_form_tmpl,
+    data: function() {
+      return {
+        user: {
+          email: 'm@hix.io',
+          password: 'mike',
+        },
+        message: '',
+      };
+    },
+    onrender: function() {
+      this.on({
+        sign_in: function() {
+          var self;
+
+          self = this;
+          client().jwtAuth('/api/v1/auth', this.get('user'))
+            .then(function(response) {
+              HixIO.token = response.headers['authorization'];
               self.set({
                 message: 'success',
                 message_class: 'success',
@@ -157,6 +220,7 @@ requirejs([
 
   var post_list = new HixIO.PostList({ el: '#post_list' });
   var post_form = new HixIO.PostForm({ el: '#post_form' });
+  var auth_form = new HixIO.AuthForm({ el: '#auth_form' });
   var api_status = new HixIO.APIStatus({ el: '#api_status' });
 
   post_list.fire('fetch');

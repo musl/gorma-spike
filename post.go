@@ -35,14 +35,9 @@ func (c *PostController) Show(ctx *app.ShowPostContext) error {
 
 func (c *PostController) Create(ctx *app.CreatePostContext) error {
 	db := models.NewPostDB(ctx.Value("db").(*gorm.DB))
-	p := ctx.Payload
-	post := models.Post{
-		Title:     p.Title,
-		Body:      p.Body,
-		Published: p.Published,
-	}
+	post := models.PostFromPostPayload(ctx.Payload)
 
-	err := db.Add(ctx, &post)
+	err := db.Add(ctx, post)
 	if err != nil {
 		return ctx.InternalServerError(fmt.Sprintf("%v", err))
 	}

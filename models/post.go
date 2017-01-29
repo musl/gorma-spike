@@ -153,9 +153,6 @@ func (m *PostDB) Delete(ctx context.Context, id int) error {
 func PostFromPostPayload(payload *app.PostPayload) *Post {
 	post := &Post{}
 	post.Body = payload.Body
-	if payload.ID != nil {
-		post.ID = *payload.ID
-	}
 	post.Published = payload.Published
 	post.Title = payload.Title
 
@@ -173,9 +170,6 @@ func (m *PostDB) UpdateFromPostPayload(ctx context.Context, payload *app.PostPay
 		return err
 	}
 	obj.Body = payload.Body
-	if payload.ID != nil {
-		obj.ID = *payload.ID
-	}
 	obj.Published = payload.Published
 	obj.Title = payload.Title
 
