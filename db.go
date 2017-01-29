@@ -1,11 +1,13 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/goadesign/goa"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"golang.org/x/net/context"
-	"net/http"
+
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 /*
