@@ -2,76 +2,13 @@ package main
 
 import (
 	"fmt"
-	jwtgo "github.com/dgrijalva/jwt-go"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
 	"github.com/goadesign/goa/middleware/security/jwt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/musl/hixio/app"
-	"golang.org/x/net/context"
-	"io/ioutil"
-	"net/http"
-	"path/filepath"
 )
-
-/*
-* Build a middleware that distributes a thread-safe reference to a
-* gorm DB to all requests.
- */
-func DBMiddleware(db *gorm.DB) goa.Middleware {
-	return func(h goa.Handler) goa.Handler {
-		return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-			newctx := context.WithValue(ctx, "db", db)
-			return h(newctx, rw, req)
-		}
-	}
-}
-
-// LoadJWTPublicKeys loads PEM encoded RSA public keys used to validata and decrypt the JWT.
-/*
-* Generate with:
-* openssl genrsa -out jwt.key 4096
-* openssl rsa -in jwt.key -pubout > jwt.key.pub
- */
-func LoadJWTPublicKeys(path string) ([]jwt.Key, error) {
-	keyFiles, err := filepath.Glob(path)
-	if err != nil {
-		return nil, err
-	}
-	keys := make([]jwt.Key, len(keyFiles))
-	for i, keyFile := range keyFiles {
-		pem, err := ioutil.ReadFile(keyFile)
-		if err != nil {
-			return nil, err
-		}
-		key, err := jwtgo.ParseRSAPublicKeyFromPEM([]byte(pem))
-		if err != nil {
-			return nil, fmt.Errorf("failed to load key %s: %s", keyFile, err)
-		}
-		keys[i] = key
-	}
-	if len(keys) == 0 {
-		return nil, fmt.Errorf("couldn't load public keys for JWT security")
-	}
-
-	return keys, nil
-}
-
-/*
-*
- */
-func ValidateJWT() goa.Middleware {
-	validator := func(h goa.Handler) goa.Handler {
-		return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-			// TODO validate the JWT claim
-			return h(ctx, rw, req)
-		}
-	}
-
-	m, _ := goa.NewMiddleware(validator)
-	return m
-}
 
 func main() {
 	// connect to the database
