@@ -1,5 +1,9 @@
-<h1>API Status</h1>
-<p>
-  <span class="{{status_class}}">{{status}}</span>
-  <button on-click='check' class="pure-button">check</button>
-</p>
+<div class="pure-form pure-form-stacked">
+  <fieldset>
+    <legend>API Status</legend>
+    <label for="api-status-check-now" class="{{status_class}}">
+      <button id="api-status-check-now" on-click='check' class="pure-button">check now</button>
+      {{status}}
+    </label>
+  </fieldset>
+</div>

@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
 	"github.com/goadesign/goa/middleware/security/jwt"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/musl/hixio/app"
+
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 func main() {

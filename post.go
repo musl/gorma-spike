@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/goadesign/goa"
 	"github.com/jinzhu/gorm"
 	"github.com/musl/hixio/app"
