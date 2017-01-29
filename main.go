@@ -58,6 +58,9 @@ func LoadJWTPublicKeys(path string) ([]jwt.Key, error) {
 	return keys, nil
 }
 
+/*
+*
+ */
 func ValidateJWT() goa.Middleware {
 	validator := func(h goa.Handler) goa.Handler {
 		return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
@@ -87,16 +90,16 @@ func main() {
 	service.Use(middleware.ErrorHandler(service, true))
 	service.Use(middleware.Recover())
 
+	// Mount app middleware
+	service.Use(DBMiddleware(db))
+
 	// Mount auth middleware
 	keys, err := LoadJWTPublicKeys("jwt.key.pub")
 	if err != nil {
 		panic(fmt.Sprintf("Unable to load JWT public key."))
 	}
 	auth_middleware := jwt.New(jwt.NewSimpleResolver(keys), ValidateJWT(), app.NewJWTSecurity())
-	service.Use(auth_middleware)
-
-	// Mount app middleware
-	service.Use(DBMiddleware(db))
+	app.UseJWTMiddleware(service, auth_middleware)
 
 	// Mount "post" controller
 	post_controller := NewPostController(service)
