@@ -1,47 +1,65 @@
 requirejs.config({
   baseUrl: '..',
   paths: {
-    axios:   '/js/lib/goa/axios.min',
-    client:  '/js/lib/goa/client',
-    ractive: '/js/lib/ractive/ractive',
-    text:    '/js/lib/ractive/text',
-    rv:      '/js/lib/ractive/rv',
+    axios:      '/js/lib/goa/axios.min',
+    client:     '/js/lib/goa/client',
+    ractive:    '/js/lib/ractive/ractive',
+    text:       '/js/lib/ractive/text',
+    rv:         '/js/lib/ractive/rv',
+    jwt_decode: '/js/lib/jwt-decode',
   }
 });
 
 requirejs([
   'client',
   'ractive',
+  'jwt_decode',
+  'rv!tmpl/blog',
   'rv!tmpl/post',
   'rv!tmpl/post_list',
   'rv!tmpl/post_form',
   'rv!tmpl/api_status',
   'rv!tmpl/auth_form',
-], function (client, Ractive, post_tmpl, post_list_tmpl, post_form_tmpl, api_status_tmpl, auth_form_tmpl) {
+], function (client, Ractive, jwt_decode, blog_tmpl, post_tmpl, post_list_tmpl, post_form_tmpl, api_status_tmpl, auth_form_tmpl) {
 
+  /*
+   * Date shim
+   */
+  Date.prototype.getUnixTime = function() { return this.getTime()/1000|0 };
+  if(!Date.now) Date.now = function() { return new Date(); }
+  Date.time = function() { return Date.now().getUnixTime(); }
+
+  // Namespace
   var HixIO = {};
 
   HixIO.PostItem = Ractive.extend({
     template: post_tmpl,
     data: function() {
       return {
-        message: '',
-        message_class: '',
+        message: null,
+        message_class: null,
       };
     },
     onrender: function() {
       this.on({
         delete: function() {
+          var self;
+
+          self = this;
+
           opts = {
             headers: {}
           }
-          if(HixIO.token) {
-            opts['headers']['authorization'] = HixIO.token
+          if(this.get('auth')) {
+            opts['headers']['authorization'] = this.get('auth.header');
           }
-          client().deletePost('/api/v1/posts/' + this.get('id'), opts)
-            .then(this.teardown.bind(this))
+          client().deletePost('/api/v1/posts/' + self.get('id'), opts)
+            .then(self.teardown.bind(self))
             .catch(function() {
-              console.log('post deletion failed for id: ' + this.get('id'));
+              self.set({
+                message: 'Failed to delete post.',
+                message_class: 'error',
+              });
             });
         },
         edit: function() {
@@ -52,8 +70,8 @@ requirejs([
           opts = {
             headers: {}
           }
-          if(HixIO.token) {
-            opts['headers']['authorization'] = HixIO.token
+          if(this.get('auth')) {
+            opts['headers']['authorization'] = this.get('auth.header');
           }
           client().updatePost('/api/v1/posts', this.get('post'), opts)
             .then(function(response) {
@@ -61,14 +79,12 @@ requirejs([
                 message: 'success',
                 message_class: 'success',
               });
-              self.fire('success');
             })
             .catch(function(error) {
               self.set({
                 message: error.statusText,
                 message_class: 'error',
               });
-              self.fire('error');
             });
         },
       });
@@ -82,21 +98,27 @@ requirejs([
     },
     data: function() {
       return {
-        posts: [],
-        message: '',
+        posts: null,
+        message: null,
+        message_class: null,
       };
     },
     fetch: function() {
       var self = this;
 
       client().listPost('/api/v1/posts').then(function(response) {
+        self.set('posts', []); // this was apparently necessary, deleting a post then adding one didn't update the list.
         self.set('posts', response.data);
       }).catch(function(error) {
-        self.set('message', error);
+        self.set({
+          message: 'Unable to fetch posts.',
+          message_class: 'error',
+        });
       });
     },
     onrender: function() {
       this.on('fetch', function() { this.fetch(); });
+      this.fetch();
     },
   });
 
@@ -104,8 +126,8 @@ requirejs([
     template: api_status_tmpl,
     data: function() {
       return {
-        status: "",
-        status_class: ""
+        status: null,
+        status_class: null,
       };
     },
     check: function() {
@@ -133,6 +155,7 @@ requirejs([
     },
     onrender: function() {
       this.on('check', function() { this.check(); });
+      this.check();
     },
   });
 
@@ -141,11 +164,11 @@ requirejs([
     data: function() {
       return {
         post: {
-          title: 'wat',
-          body: 'wat',
-          published: true,
+          title: null,
+          body: null,
+          published: false,
         },
-        message: '',
+        message: null,
       };
     },
     onrender: function() {
@@ -157,23 +180,22 @@ requirejs([
           opts = {
             headers: {}
           }
-          if(HixIO.token) {
-            opts['headers']['authorization'] = HixIO.token
+          if(this.get('auth')) {
+            opts['headers']['authorization'] = this.get('auth.header');
           }
           client().createPost('/api/v1/posts', this.get('post'), opts)
             .then(function(response) {
               self.set({
-                message: 'success',
+                message: 'Success!',
                 message_class: 'success',
               });
               self.fire('success');
             })
             .catch(function(error) {
               self.set({
-                message: error.statusText,
+                message: 'Failed to create post.',
                 message_class: 'error',
               });
-              self.fire('error');
             });
         }
       });
@@ -185,10 +207,10 @@ requirejs([
     data: function() {
       return {
         user: {
-          email: 'm@hix.io',
-          password: 'mike',
+          email: null,
+          password: null,
         },
-        message: '',
+        message: null,
       };
     },
     onrender: function() {
@@ -197,38 +219,110 @@ requirejs([
           var self;
 
           self = this;
+
           client().jwtAuth('/api/v1/auth', this.get('user'))
             .then(function(response) {
-              HixIO.token = response.headers['authorization'];
+              var auth_header, store;
+
+              auth_header = response.headers.authorization;
+              if(!auth_header) {
+                self.set({
+                  message: 'Unable to log in.',
+                  message_class: 'error',
+                });
+                return;
+              }
+
+              self.get('auth_store').setItem(self.get('auth_key'), auth_header.split(/\s+/)[1]);
               self.set({
-                message: 'success',
-                message_class: 'success',
+                user: {
+                  email: null,
+                  password: null,
+                },
               });
-              self.fire('success');
+              self.fire('signed-in');
             })
             .catch(function(error) {
               self.set({
-                message: error.statusText,
+                message: 'That didn\'t work.',
                 message_class: 'error',
               });
-              self.fire('error');
             });
-        }
+        },
+        sign_out: function() {
+          this.get('auth_store').removeItem(this.get('auth_key'));
+          this.set({
+            user: {
+              email: null,
+              password: null,
+            },
+          });
+          this.fire('signed-out');
+        },
       });
     },
   });
 
-  var post_list = new HixIO.PostList({ el: '#post_list' });
-  var post_form = new HixIO.PostForm({ el: '#post_form' });
-  var auth_form = new HixIO.AuthForm({ el: '#auth_form' });
-  var api_status = new HixIO.APIStatus({ el: '#api_status' });
+  var blog = new Ractive({
+    el: '#blog',
+    template: blog_tmpl,
+    components: {
+      apistatus: HixIO.APIStatus,
+      authform: HixIO.AuthForm,
+      postform: HixIO.PostForm,
+      postlist: HixIO.PostList,
+    },
+    data: function() {
+      return {
+        auth_store: localStorage,
+        auth_key: 'hixio.auth.token',
+        auth: null,
+      };
+    },
+    auth_sync: function() {
+      var token;
 
-  post_list.fire('fetch');
-  api_status.fire('check');
-  post_form.on({
-    success: function() {
-      post_list.fire('fetch');
-    }
+      console.log('auth_sync');
+      token = this.get('auth_store').getItem(this.get('auth_key'));
+
+      if(token === null) {
+        this.set('auth', null);
+        return;
+      }
+
+      this.set({
+        auth: {
+          token: jwt_decode(token),
+          header: 'Bearer ' + token,
+        }
+      });
+    },
+    oninit: function() {
+      this.auth_sync();
+    },
+    onrender: function() {
+      var self;
+
+      self = this;
+
+      this.on('*.signed-in *.signed-out', function() {
+        self.auth_sync();
+      });
+
+      this.on('*.success', function() {
+        var comps = self.findAllComponents('postlist');
+        console.log(this.event);
+        for(c in comps) {
+          comps[c].fire('fetch');
+        }
+      });
+
+      this.on('* *.*', function() {
+        //console.log(this.event);
+      });
+
+    },
   });
 
 });
+

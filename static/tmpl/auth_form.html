@@ -1,3 +1,7 @@
+{{#if auth}}
+<p>Hi, {{auth.token.name}}!</p>
+<button on-click="sign_out" class="pure-button">Sign Out</button>
+{{else}}
 <div class="pure-form pure-form-stacked">
   <fieldset>
     <legend>Sign In</legend>
@@ -10,6 +14,9 @@
 
     <button on-click='sign_in' class="pure-button pure-button-primary">Sign In</button>
 
+    {{#if message}}
     <p class="{{message_class}}">{{message}}</p>
+    {{/if}}
   </fieldset>
 </div>
+{{/if}}

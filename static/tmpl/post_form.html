@@ -1,3 +1,4 @@
+{{#if auth}}
 <div class="pure-form pure-form-stacked">
   <fieldset>
     <legend>Create a Post</legend>  
@@ -20,6 +21,9 @@
     <button on-click='create' class="pure-button pure-button-primary">create</button>
     {{/if}}
 
+    {{#if message}}
     <p class="{{message_class}}">{{message}}</p>
+    {{/if}}
   </fieldset>
 </div>
+{{/if}}
