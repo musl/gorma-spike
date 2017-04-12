@@ -145,10 +145,10 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 Payload example:
 
 {
-   "alt": "ul",
-   "original_url": "s1x",
+   "alt": "1x",
+   "original_url": "6",
    "published": false,
-   "thumbnail_url": "l"
+   "thumbnail_url": "b"
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
@@ -164,9 +164,9 @@ Payload example:
 Payload example:
 
 {
-   "body": "b",
+   "body": "ywn",
    "published": false,
-   "title": "wn"
+   "title": "9sj"
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
 	}
@@ -182,9 +182,9 @@ Payload example:
 Payload example:
 
 {
-   "email": "h",
-   "name": "s",
-   "password": "Minima provident vitae mollitia molestiae sed et."
+   "email": "ip1",
+   "name": "88",
+   "password": "Excepturi eos est dolore."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp4.Run(c, args) },
 	}
@@ -237,8 +237,8 @@ Payload example:
 Payload example:
 
 {
-   "email": "hb",
-   "password": "Consectetur qui ipsam odit."
+   "email": "nc",
+   "password": "Aut natus eos voluptatem."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp8.Run(c, args) },
 	}

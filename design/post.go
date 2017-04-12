@@ -26,6 +26,8 @@ var PostMedia = MediaType("application/vnd.hixio.goa.post", func() {
 		Attribute("title")
 		Attribute("body")
 		Attribute("published")
+		Attribute("created_at", DateTime)
+		Attribute("updated_at", DateTime)
 		Required("id", "title", "body", "published")
 	})
 
@@ -33,6 +35,8 @@ var PostMedia = MediaType("application/vnd.hixio.goa.post", func() {
 		Attribute("id")
 		Attribute("title")
 		Attribute("body")
+		Attribute("created_at", DateTime)
+		Attribute("updated_at", DateTime)
 		Attribute("published")
 	})
 })

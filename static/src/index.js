@@ -11,6 +11,7 @@ import {
   Switch
 } from 'react-router-dom';
 import Moment from 'react-moment';
+import moment from 'moment';
 import axios from 'axios';
 
 const NotFound = (props) => (
@@ -48,7 +49,7 @@ const PhotoIndex = (props) => (
     ) : (
       Object.keys(props.photo_groups).map((group) => (
         <div key={group}>
-          <h2><Moment format="MMMM YYYY">{group}</Moment></h2>
+          <h2>{group}</h2>
           {props.photo_groups[group].map((photo) => (
             <Thumbnail key={photo.id.toString()} {...photo}/>
           ))}
@@ -140,13 +141,13 @@ class App extends Component {
 
       res.data.forEach((photo) => {
         var date = new Date(photo.created_at);
-        var key = new Date(date.getFullYear(), date.getMonth());
+        var group = moment(date).format("MMM YYYY");
 
-        if(!groups[key]) {
-          groups[key] = [];
+        if(!groups[group]) {
+          groups[group] = [];
         }
         photos[photo.id] = photo;
-        groups[key] = groups[key].concat(photo);
+        groups[group] = groups[group].concat(photo);
       });
 
       this.setState({

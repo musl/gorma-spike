@@ -15,6 +15,7 @@ package client
 import (
 	"github.com/goadesign/goa"
 	"net/http"
+	"time"
 	"unicode/utf8"
 )
 
@@ -23,7 +24,8 @@ import (
 // Identifier: application/vnd.hixio.goa.photo; view=default
 type Photo struct {
 	// name of a post
-	Alt string `form:"alt" json:"alt" xml:"alt"`
+	Alt       string     `form:"alt" json:"alt" xml:"alt"`
+	CreatedAt *time.Time `form:"created_at,omitempty" json:"created_at,omitempty" xml:"created_at,omitempty"`
 	// Unique Photo ID
 	ID int `form:"id" json:"id" xml:"id"`
 	// URL to full-size image
@@ -31,7 +33,8 @@ type Photo struct {
 	// is the photo published
 	Published bool `form:"published" json:"published" xml:"published"`
 	// URL to thumbnail-size image
-	ThumbnailURL string `form:"thumbnail_url" json:"thumbnail_url" xml:"thumbnail_url"`
+	ThumbnailURL string     `form:"thumbnail_url" json:"thumbnail_url" xml:"thumbnail_url"`
+	UpdatedAt    *time.Time `form:"updated_at,omitempty" json:"updated_at,omitempty" xml:"updated_at,omitempty"`
 }
 
 // Validate validates the Photo media type instance.
@@ -108,13 +111,15 @@ func (c *Client) DecodePhotoCollection(resp *http.Response) (PhotoCollection, er
 // Identifier: application/vnd.hixio.goa.post; view=default
 type Post struct {
 	// body of a post
-	Body string `form:"body" json:"body" xml:"body"`
+	Body      string     `form:"body" json:"body" xml:"body"`
+	CreatedAt *time.Time `form:"created_at,omitempty" json:"created_at,omitempty" xml:"created_at,omitempty"`
 	// Unique Post ID
 	ID int `form:"id" json:"id" xml:"id"`
 	// is the post published
 	Published bool `form:"published" json:"published" xml:"published"`
 	// name of a post
-	Title string `form:"title" json:"title" xml:"title"`
+	Title     string     `form:"title" json:"title" xml:"title"`
+	UpdatedAt *time.Time `form:"updated_at,omitempty" json:"updated_at,omitempty" xml:"updated_at,omitempty"`
 }
 
 // Validate validates the Post media type instance.

@@ -46,9 +46,11 @@ func (m *PostDB) ListPost(ctx context.Context) []*app.Post {
 func (m *Post) PostToPost() *app.Post {
 	post := &app.Post{}
 	post.Body = m.Body
+	post.CreatedAt = &m.CreatedAt
 	post.ID = m.ID
 	post.Published = m.Published
 	post.Title = m.Title
+	post.UpdatedAt = &m.UpdatedAt
 
 	return post
 }

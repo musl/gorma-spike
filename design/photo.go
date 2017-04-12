@@ -30,6 +30,8 @@ var PhotoMedia = MediaType("application/vnd.hixio.goa.photo", func() {
 		Attribute("original_url")
 		Attribute("thumbnail_url")
 		Attribute("published")
+		Attribute("created_at", DateTime)
+		Attribute("updated_at", DateTime)
 		Required("id", "alt", "original_url", "thumbnail_url", "published")
 	})
 
@@ -39,6 +41,8 @@ var PhotoMedia = MediaType("application/vnd.hixio.goa.photo", func() {
 		Attribute("original_url")
 		Attribute("thumbnail_url")
 		Attribute("published")
+		Attribute("created_at")
+		Attribute("updated_at")
 	})
 })
 

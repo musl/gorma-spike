@@ -4,17 +4,17 @@ definitions:
   AuthPayload:
     description: Auth Payload is used to auth users.
     example:
-      email: hb
-      password: Consectetur qui ipsam odit.
+      email: nc
+      password: Aut natus eos voluptatem.
     properties:
       email:
         description: email of a user
-        example: hb
+        example: nc
         minLength: 1
         type: string
       password:
         description: password of the user
-        example: Consectetur qui ipsam odit.
+        example: Aut natus eos voluptatem.
         type: string
     required:
     - email
@@ -24,19 +24,19 @@ definitions:
   PhotoPayload:
     description: Photo Payload is used to create photos.
     example:
-      alt: ul
-      original_url: s1x
+      alt: 1x
+      original_url: "6"
       published: false
-      thumbnail_url: l
+      thumbnail_url: b
     properties:
       alt:
         description: name of a post
-        example: ul
+        example: 1x
         minLength: 1
         type: string
       original_url:
         description: URL to full-size image
-        example: s1x
+        example: "6"
         minLength: 1
         type: string
       published:
@@ -45,7 +45,7 @@ definitions:
         type: boolean
       thumbnail_url:
         description: URL to thumbnail-size image
-        example: l
+        example: b
         minLength: 1
         type: string
     required:
@@ -58,13 +58,13 @@ definitions:
   PostPayload:
     description: Post Payload is used to create posts.
     example:
-      body: b
+      body: ywn
       published: false
-      title: wn
+      title: 9sj
     properties:
       body:
         description: body of a post
-        example: b
+        example: ywn
         minLength: 1
         type: string
       published:
@@ -73,7 +73,7 @@ definitions:
         type: boolean
       title:
         description: name of a post
-        example: wn
+        example: 9sj
         minLength: 1
         type: string
     required:
@@ -85,23 +85,23 @@ definitions:
   UserPayload:
     description: User Payload is used to create users.
     example:
-      email: h
-      name: s
-      password: Minima provident vitae mollitia molestiae sed et.
+      email: ip1
+      name: "88"
+      password: Excepturi eos est dolore.
     properties:
       email:
         description: email of a user
-        example: h
+        example: ip1
         minLength: 1
         type: string
       name:
         description: name of a user
-        example: s
+        example: "88"
         minLength: 1
         type: string
       password:
         description: password of the user
-        example: Minima provident vitae mollitia molestiae sed et.
+        example: Excepturi eos est dolore.
         type: string
     required:
     - name
@@ -150,24 +150,30 @@ definitions:
     description: photo media type (default view)
     example:
       alt: "6"
-      id: 1.7503025e+18
-      original_url: f0
+      created_at: 2015-06-05T09:50:50-07:00
+      id: 3.296916e+18
+      original_url: "0"
       published: true
       thumbnail_url: m
+      updated_at: 2015-05-06T23:50:59-07:00
     properties:
       alt:
         description: name of a post
         example: "6"
         minLength: 1
         type: string
+      created_at:
+        example: 2015-06-05T09:50:50-07:00
+        format: date-time
+        type: string
       id:
         description: Unique Photo ID
-        example: 1.7503025e+18
+        example: 3.296916e+18
         format: int64
         type: integer
       original_url:
         description: URL to full-size image
-        example: f0
+        example: "0"
         minLength: 1
         type: string
       published:
@@ -178,6 +184,10 @@ definitions:
         description: URL to thumbnail-size image
         example: m
         minLength: 1
+        type: string
+      updated_at:
+        example: 2015-05-06T23:50:59-07:00
+        format: date-time
         type: string
     required:
     - id
@@ -192,20 +202,26 @@ definitions:
       view)
     example:
     - alt: "6"
-      id: 1.7503025e+18
-      original_url: f0
+      created_at: 2015-06-05T09:50:50-07:00
+      id: 3.296916e+18
+      original_url: "0"
       published: true
       thumbnail_url: m
+      updated_at: 2015-05-06T23:50:59-07:00
     - alt: "6"
-      id: 1.7503025e+18
-      original_url: f0
+      created_at: 2015-06-05T09:50:50-07:00
+      id: 3.296916e+18
+      original_url: "0"
       published: true
       thumbnail_url: m
+      updated_at: 2015-05-06T23:50:59-07:00
     - alt: "6"
-      id: 1.7503025e+18
-      original_url: f0
+      created_at: 2015-06-05T09:50:50-07:00
+      id: 3.296916e+18
+      original_url: "0"
       published: true
       thumbnail_url: m
+      updated_at: 2015-05-06T23:50:59-07:00
     items:
       $ref: '#/definitions/photo'
     title: 'Mediatype identifier: application/vnd.hixio.goa.photo; type=collection'
@@ -213,19 +229,25 @@ definitions:
   post:
     description: post media type (default view)
     example:
-      body: g8a
-      id: 2.0440098e+18
+      body: 8a
+      created_at: 1997-09-15T08:19:24-07:00
+      id: 3.3292912e+18
       published: true
-      title: o
+      title: i
+      updated_at: 2005-02-15T03:26:28-08:00
     properties:
       body:
         description: body of a post
-        example: g8a
+        example: 8a
         minLength: 1
+        type: string
+      created_at:
+        example: 1997-09-15T08:19:24-07:00
+        format: date-time
         type: string
       id:
         description: Unique Post ID
-        example: 2.0440098e+18
+        example: 3.3292912e+18
         format: int64
         type: integer
       published:
@@ -234,8 +256,12 @@ definitions:
         type: boolean
       title:
         description: name of a post
-        example: o
+        example: i
         minLength: 1
+        type: string
+      updated_at:
+        example: 2005-02-15T03:26:28-08:00
+        format: date-time
         type: string
     required:
     - id
@@ -247,10 +273,12 @@ definitions:
   postCollection:
     description: postCollection is the media type for an array of post (default view)
     example:
-    - body: g8a
-      id: 2.0440098e+18
+    - body: 8a
+      created_at: 1997-09-15T08:19:24-07:00
+      id: 3.3292912e+18
       published: true
-      title: o
+      title: i
+      updated_at: 2005-02-15T03:26:28-08:00
     items:
       $ref: '#/definitions/post'
     title: 'Mediatype identifier: application/vnd.hixio.goa.post; type=collection'
@@ -258,23 +286,23 @@ definitions:
   user:
     description: user media type (default view)
     example:
-      email: "02"
-      id: 7.357323e+18
-      name: o
+      email: n0o
+      id: 1.8750669e+18
+      name: hb
     properties:
       email:
         description: email of a user
-        example: "02"
+        example: n0o
         minLength: 1
         type: string
       id:
         description: Unique Post ID
-        example: 7.357323e+18
+        example: 1.8750669e+18
         format: int64
         type: integer
       name:
         description: name of a user
-        example: o
+        example: hb
         minLength: 1
         type: string
     required:
@@ -286,9 +314,9 @@ definitions:
   userCollection:
     description: userCollection is the media type for an array of user (default view)
     example:
-    - email: "02"
-      id: 7.357323e+18
-      name: o
+    - email: n0o
+      id: 1.8750669e+18
+      name: hb
     items:
       $ref: '#/definitions/user'
     title: 'Mediatype identifier: application/vnd.hixio.goa.user; type=collection'

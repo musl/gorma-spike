@@ -46,10 +46,12 @@ func (m *PhotoDB) ListPhoto(ctx context.Context) []*app.Photo {
 func (m *Photo) PhotoToPhoto() *app.Photo {
 	photo := &app.Photo{}
 	photo.Alt = m.Alt
+	photo.CreatedAt = &m.CreatedAt
 	photo.ID = m.ID
 	photo.OriginalURL = m.OriginalURL
 	photo.Published = m.Published
 	photo.ThumbnailURL = m.ThumbnailURL
+	photo.UpdatedAt = &m.UpdatedAt
 
 	return photo
 }
