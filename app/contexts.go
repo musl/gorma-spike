@@ -49,6 +49,150 @@ func (ctx *JWTAuthContext) Unauthorized() error {
 	return nil
 }
 
+// CreatePhotoContext provides the photo create action context.
+type CreatePhotoContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Payload *PhotoPayload
+}
+
+// NewCreatePhotoContext parses the incoming request URL and body, performs validations and creates the
+// context used by the photo controller create action.
+func NewCreatePhotoContext(ctx context.Context, service *goa.Service) (*CreatePhotoContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	rctx := CreatePhotoContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// Created sends a HTTP response with status code 201.
+func (ctx *CreatePhotoContext) Created(r *Photo) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.hixio.goa.photo")
+	return ctx.ResponseData.Service.Send(ctx.Context, 201, r)
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *CreatePhotoContext) InternalServerError(r string) error {
+	ctx.ResponseData.Header().Set("Content-Type", "")
+	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
+}
+
+// DeletePhotoContext provides the photo delete action context.
+type DeletePhotoContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	ID int
+}
+
+// NewDeletePhotoContext parses the incoming request URL and body, performs validations and creates the
+// context used by the photo controller delete action.
+func NewDeletePhotoContext(ctx context.Context, service *goa.Service) (*DeletePhotoContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	rctx := DeletePhotoContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramID := req.Params["id"]
+	if len(paramID) > 0 {
+		rawID := paramID[0]
+		if id, err2 := strconv.Atoi(rawID); err2 == nil {
+			rctx.ID = id
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("id", rawID, "integer"))
+		}
+	}
+	return &rctx, err
+}
+
+// NoContent sends a HTTP response with status code 204.
+func (ctx *DeletePhotoContext) NoContent() error {
+	ctx.ResponseData.WriteHeader(204)
+	return nil
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *DeletePhotoContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *DeletePhotoContext) InternalServerError(r string) error {
+	ctx.ResponseData.Header().Set("Content-Type", "")
+	return ctx.ResponseData.Service.Send(ctx.Context, 500, r)
+}
+
+// ListPhotoContext provides the photo list action context.
+type ListPhotoContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewListPhotoContext parses the incoming request URL and body, performs validations and creates the
+// context used by the photo controller list action.
+func NewListPhotoContext(ctx context.Context, service *goa.Service) (*ListPhotoContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	rctx := ListPhotoContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *ListPhotoContext) OK(r PhotoCollection) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.hixio.goa.photo; type=collection")
+	if r == nil {
+		r = PhotoCollection{}
+	}
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// ShowPhotoContext provides the photo show action context.
+type ShowPhotoContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	ID int
+}
+
+// NewShowPhotoContext parses the incoming request URL and body, performs validations and creates the
+// context used by the photo controller show action.
+func NewShowPhotoContext(ctx context.Context, service *goa.Service) (*ShowPhotoContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	rctx := ShowPhotoContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramID := req.Params["id"]
+	if len(paramID) > 0 {
+		rawID := paramID[0]
+		if id, err2 := strconv.Atoi(rawID); err2 == nil {
+			rctx.ID = id
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("id", rawID, "integer"))
+		}
+	}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *ShowPhotoContext) OK(r *Photo) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.hixio.goa.photo")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *ShowPhotoContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
 // CreatePostContext provides the post create action context.
 type CreatePostContext struct {
 	context.Context

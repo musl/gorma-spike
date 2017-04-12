@@ -48,6 +48,10 @@ func main() {
 	post_controller := NewPostController(service)
 	app.MountPostController(service, post_controller)
 
+	// Mount "photo" controller
+	photo_controller := NewPhotoController(service)
+	app.MountPhotoController(service, photo_controller)
+
 	// Mount "static" controller
 	static_controller := NewStaticController(service)
 	app.MountStaticController(service, static_controller)

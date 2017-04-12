@@ -4,33 +4,67 @@ definitions:
   AuthPayload:
     description: Auth Payload is used to auth users.
     example:
-      email: c
-      password: Est ratione similique.
+      email: hb
+      password: Consectetur qui ipsam odit.
     properties:
       email:
         description: email of a user
-        example: c
+        example: hb
         minLength: 1
         type: string
       password:
         description: password of the user
-        example: Est ratione similique.
+        example: Consectetur qui ipsam odit.
         type: string
     required:
     - email
     - password
     title: AuthPayload
     type: object
+  PhotoPayload:
+    description: Photo Payload is used to create photos.
+    example:
+      alt: ul
+      original_url: s1x
+      published: false
+      thumbnail_url: l
+    properties:
+      alt:
+        description: name of a post
+        example: ul
+        minLength: 1
+        type: string
+      original_url:
+        description: URL to full-size image
+        example: s1x
+        minLength: 1
+        type: string
+      published:
+        description: is the photo published
+        example: false
+        type: boolean
+      thumbnail_url:
+        description: URL to thumbnail-size image
+        example: l
+        minLength: 1
+        type: string
+    required:
+    - alt
+    - original_url
+    - thumbnail_url
+    - published
+    title: PhotoPayload
+    type: object
   PostPayload:
     description: Post Payload is used to create posts.
     example:
-      body: n0o
+      body: b
       published: false
-      title: hb
+      title: wn
     properties:
       body:
         description: body of a post
-        example: n0o
+        example: b
         minLength: 1
         type: string
       published:
@@ -39,7 +73,7 @@ definitions:
         type: boolean
       title:
         description: name of a post
-        example: hb
+        example: wn
         minLength: 1
         type: string
     required:
@@ -51,23 +85,23 @@ definitions:
   UserPayload:
     description: User Payload is used to create users.
     example:
-      email: "4"
-      name: c6m
-      password: Eos voluptatem ut.
+      email: h
+      name: s
+      password: Minima provident vitae mollitia molestiae sed et.
     properties:
       email:
         description: email of a user
-        example: "4"
+        example: h
         minLength: 1
         type: string
       name:
         description: name of a user
-        example: c6m
+        example: s
         minLength: 1
         type: string
       password:
         description: password of the user
-        example: Eos voluptatem ut.
+        example: Minima provident vitae mollitia molestiae sed et.
         type: string
     required:
     - name
@@ -112,31 +146,95 @@ definitions:
         type: string
     title: 'Mediatype identifier: application/vnd.goa.error'
     type: object
-  post:
-    description: post media type (default view)
+  photo:
+    description: photo media type (default view)
     example:
-      body: "6"
+      alt: "6"
       id: 1.7503025e+18
-      published: false
-      title: "0"
+      original_url: f0
+      published: true
+      thumbnail_url: m
     properties:
-      body:
-        description: body of a post
+      alt:
+        description: name of a post
         example: "6"
         minLength: 1
         type: string
       id:
-        description: Unique Post ID
+        description: Unique Photo ID
         example: 1.7503025e+18
+        format: int64
+        type: integer
+      original_url:
+        description: URL to full-size image
+        example: f0
+        minLength: 1
+        type: string
+      published:
+        description: is the photo published
+        example: true
+        type: boolean
+      thumbnail_url:
+        description: URL to thumbnail-size image
+        example: m
+        minLength: 1
+        type: string
+    required:
+    - id
+    - alt
+    - original_url
+    - thumbnail_url
+    - published
+    title: 'Mediatype identifier: application/vnd.hixio.goa.photo'
+    type: object
+  photoCollection:
+    description: photoCollection is the media type for an array of photo (default
+      view)
+    example:
+    - alt: "6"
+      id: 1.7503025e+18
+      original_url: f0
+      published: true
+      thumbnail_url: m
+    - alt: "6"
+      id: 1.7503025e+18
+      original_url: f0
+      published: true
+      thumbnail_url: m
+    - alt: "6"
+      id: 1.7503025e+18
+      original_url: f0
+      published: true
+      thumbnail_url: m
+    items:
+      $ref: '#/definitions/photo'
+    title: 'Mediatype identifier: application/vnd.hixio.goa.photo; type=collection'
+    type: array
+  post:
+    description: post media type (default view)
+    example:
+      body: g8a
+      id: 2.0440098e+18
+      published: true
+      title: o
+    properties:
+      body:
+        description: body of a post
+        example: g8a
+        minLength: 1
+        type: string
+      id:
+        description: Unique Post ID
+        example: 2.0440098e+18
         format: int64
         type: integer
       published:
         description: is the post published
-        example: false
+        example: true
         type: boolean
       title:
         description: name of a post
-        example: "0"
+        example: o
         minLength: 1
         type: string
     required:
@@ -149,14 +247,10 @@ definitions:
   postCollection:
     description: postCollection is the media type for an array of post (default view)
     example:
-    - body: "6"
-      id: 1.7503025e+18
-      published: false
-      title: "0"
-    - body: "6"
-      id: 1.7503025e+18
-      published: false
-      title: "0"
+    - body: g8a
+      id: 2.0440098e+18
+      published: true
+      title: o
     items:
       $ref: '#/definitions/post'
     title: 'Mediatype identifier: application/vnd.hixio.goa.post; type=collection'
@@ -164,23 +258,23 @@ definitions:
   user:
     description: user media type (default view)
     example:
-      email: m
-      id: 7.0499036e+18
-      name: g8a
+      email: "02"
+      id: 7.357323e+18
+      name: o
     properties:
       email:
         description: email of a user
-        example: m
+        example: "02"
         minLength: 1
         type: string
       id:
         description: Unique Post ID
-        example: 7.0499036e+18
+        example: 7.357323e+18
         format: int64
         type: integer
       name:
         description: name of a user
-        example: g8a
+        example: o
         minLength: 1
         type: string
     required:
@@ -192,9 +286,9 @@ definitions:
   userCollection:
     description: userCollection is the media type for an array of user (default view)
     example:
-    - email: m
-      id: 7.0499036e+18
-      name: g8a
+    - email: "02"
+      id: 7.357323e+18
+      name: o
     items:
       $ref: '#/definitions/user'
     title: 'Mediatype identifier: application/vnd.hixio.goa.user; type=collection'
@@ -222,7 +316,7 @@ paths:
           description: File not found
           schema:
             $ref: '#/definitions/error'
-      summary: Download static/
+      summary: Download static/build
   /api/v1/auth:
     post:
       description: Creates a valid JWT
@@ -246,6 +340,91 @@ paths:
       summary: jwt auth
       tags:
       - auth
+  /api/v1/photos:
+    get:
+      description: lists all published photos
+      operationId: photo#list
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/photoCollection'
+      summary: list photo
+      tags:
+      - photo
+    post:
+      description: |-
+        creates a photo
+
+        Required security scopes:
+          * `api:access`
+      operationId: photo#create
+      parameters:
+      - description: Photo Payload is used to create photos.
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/PhotoPayload'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/photo'
+        "500":
+          description: Internal Server Error
+      security:
+      - jwt:
+        - api:access
+      summary: create photo
+      tags:
+      - photo
+  /api/v1/photos/{id}:
+    delete:
+      description: |-
+        deletes a photo
+
+        Required security scopes:
+          * `api:access`
+      operationId: photo#delete
+      parameters:
+      - description: Unique Photo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - jwt:
+        - api:access
+      summary: delete photo
+      tags:
+      - photo
+    get:
+      description: shows a photo
+      operationId: photo#show
+      parameters:
+      - description: Unique Photo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/photo'
+        "404":
+          description: Not Found
+      summary: show photo
+      tags:
+      - photo
   /api/v1/posts:
     get:
       description: lists all publisged posts
@@ -478,7 +657,7 @@ responses:
   OK:
     description: OK
     schema:
-      $ref: '#/definitions/post'
+      $ref: '#/definitions/photo'
   Unauthorized:
     description: Unauthorized
 securityDefinitions:

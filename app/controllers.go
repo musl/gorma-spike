@@ -77,6 +77,104 @@ func unmarshalJWTAuthPayload(ctx context.Context, service *goa.Service, req *htt
 	return nil
 }
 
+// PhotoController is the controller interface for the Photo actions.
+type PhotoController interface {
+	goa.Muxer
+	Create(*CreatePhotoContext) error
+	Delete(*DeletePhotoContext) error
+	List(*ListPhotoContext) error
+	Show(*ShowPhotoContext) error
+}
+
+// MountPhotoController "mounts" a Photo resource controller on the given service.
+func MountPhotoController(service *goa.Service, ctrl PhotoController) {
+	initService(service)
+	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewCreatePhotoContext(ctx, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*PhotoPayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.Create(rctx)
+	}
+	h = handleSecurity("jwt", h, "api:access")
+	service.Mux.Handle("POST", "/api/v1/photos", ctrl.MuxHandler("Create", h, unmarshalCreatePhotoPayload))
+	service.LogInfo("mount", "ctrl", "Photo", "action", "Create", "route", "POST /api/v1/photos", "security", "jwt")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewDeletePhotoContext(ctx, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Delete(rctx)
+	}
+	h = handleSecurity("jwt", h, "api:access")
+	service.Mux.Handle("DELETE", "/api/v1/photos/:id", ctrl.MuxHandler("Delete", h, nil))
+	service.LogInfo("mount", "ctrl", "Photo", "action", "Delete", "route", "DELETE /api/v1/photos/:id", "security", "jwt")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewListPhotoContext(ctx, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.List(rctx)
+	}
+	service.Mux.Handle("GET", "/api/v1/photos", ctrl.MuxHandler("List", h, nil))
+	service.LogInfo("mount", "ctrl", "Photo", "action", "List", "route", "GET /api/v1/photos")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewShowPhotoContext(ctx, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Show(rctx)
+	}
+	service.Mux.Handle("GET", "/api/v1/photos/:id", ctrl.MuxHandler("Show", h, nil))
+	service.LogInfo("mount", "ctrl", "Photo", "action", "Show", "route", "GET /api/v1/photos/:id")
+}
+
+// unmarshalCreatePhotoPayload unmarshals the request body into the context request data Payload field.
+func unmarshalCreatePhotoPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &photoPayload{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
 // PostController is the controller interface for the Post actions.
 type PostController interface {
 	goa.Muxer
@@ -186,13 +284,13 @@ func MountStaticController(service *goa.Service, ctrl StaticController) {
 	initService(service)
 	var h goa.Handler
 
-	h = ctrl.FileHandler("/*filepath", "static/")
+	h = ctrl.FileHandler("/*filepath", "static/build")
 	service.Mux.Handle("GET", "/*filepath", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Static", "files", "static/", "route", "GET /*filepath")
+	service.LogInfo("mount", "ctrl", "Static", "files", "static/build", "route", "GET /*filepath")
 
-	h = ctrl.FileHandler("/", "static/index.html")
+	h = ctrl.FileHandler("/", "static/build/index.html")
 	service.Mux.Handle("GET", "/", ctrl.MuxHandler("serve", h, nil))
-	service.LogInfo("mount", "ctrl", "Static", "files", "static/index.html", "route", "GET /")
+	service.LogInfo("mount", "ctrl", "Static", "files", "static/build/index.html", "route", "GET /")
 }
 
 // StatusController is the controller interface for the Status actions.

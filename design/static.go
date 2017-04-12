@@ -6,5 +6,5 @@ import (
 
 var _ = Resource("static", func() {
 	Description("The static file endpoint.")
-	Files("/*filepath", "static/")
+	Files("/*filepath", "static/build")
 })

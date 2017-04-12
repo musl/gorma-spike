@@ -25,6 +25,32 @@ type (
 		PrettyPrint bool
 	}
 
+	// CreatePhotoCommand is the command line data structure for the create action of photo
+	CreatePhotoCommand struct {
+		Payload     string
+		ContentType string
+		PrettyPrint bool
+	}
+
+	// DeletePhotoCommand is the command line data structure for the delete action of photo
+	DeletePhotoCommand struct {
+		// Unique Photo ID
+		ID          int
+		PrettyPrint bool
+	}
+
+	// ListPhotoCommand is the command line data structure for the list action of photo
+	ListPhotoCommand struct {
+		PrettyPrint bool
+	}
+
+	// ShowPhotoCommand is the command line data structure for the show action of photo
+	ShowPhotoCommand struct {
+		// Unique Photo ID
+		ID          int
+		PrettyPrint bool
+	}
+
 	// CreatePostCommand is the command line data structure for the create action of post
 	CreatePostCommand struct {
 		Payload     string
@@ -110,7 +136,26 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 		Use:   "create",
 		Short: `create action`,
 	}
-	tmp2 := new(CreatePostCommand)
+	tmp2 := new(CreatePhotoCommand)
+	sub = &cobra.Command{
+		Use:   `photo ["/api/v1/photos"]`,
+		Short: `A blog photo`,
+		Long: `A blog photo
+
+Payload example:
+
+{
+   "alt": "ul",
+   "original_url": "s1x",
+   "published": false,
+   "thumbnail_url": "l"
+}`,
+		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
+	}
+	tmp2.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp2.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	tmp3 := new(CreatePostCommand)
 	sub = &cobra.Command{
 		Use:   `post ["/api/v1/posts"]`,
 		Short: `A blog post`,
@@ -119,16 +164,16 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 Payload example:
 
 {
-   "body": "n0o",
+   "body": "b",
    "published": false,
-   "title": "hb"
+   "title": "wn"
 }`,
-		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
+		RunE: func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
 	}
-	tmp2.RegisterFlags(sub, c)
-	sub.PersistentFlags().BoolVar(&tmp2.PrettyPrint, "pp", false, "Pretty print response body")
+	tmp3.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp3.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp3 := new(CreateUserCommand)
+	tmp4 := new(CreateUserCommand)
 	sub = &cobra.Command{
 		Use:   `user ["/api/v1/users"]`,
 		Short: `A User`,
@@ -137,44 +182,53 @@ Payload example:
 Payload example:
 
 {
-   "email": "4",
-   "name": "c6m",
-   "password": "Eos voluptatem ut."
+   "email": "h",
+   "name": "s",
+   "password": "Minima provident vitae mollitia molestiae sed et."
 }`,
-		RunE: func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
+		RunE: func(cmd *cobra.Command, args []string) error { return tmp4.Run(c, args) },
 	}
-	tmp3.RegisterFlags(sub, c)
-	sub.PersistentFlags().BoolVar(&tmp3.PrettyPrint, "pp", false, "Pretty print response body")
+	tmp4.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp4.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
 		Use:   "delete",
 		Short: `delete action`,
 	}
-	tmp4 := new(DeletePostCommand)
+	tmp5 := new(DeletePhotoCommand)
 	sub = &cobra.Command{
-		Use:   `post ["/api/v1/posts/ID"]`,
-		Short: `A blog post`,
-		RunE:  func(cmd *cobra.Command, args []string) error { return tmp4.Run(c, args) },
-	}
-	tmp4.RegisterFlags(sub, c)
-	sub.PersistentFlags().BoolVar(&tmp4.PrettyPrint, "pp", false, "Pretty print response body")
-	command.AddCommand(sub)
-	tmp5 := new(DeleteUserCommand)
-	sub = &cobra.Command{
-		Use:   `user ["/api/v1/users/ID"]`,
-		Short: `A User`,
+		Use:   `photo ["/api/v1/photos/ID"]`,
+		Short: `A blog photo`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp5.Run(c, args) },
 	}
 	tmp5.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp5.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	tmp6 := new(DeletePostCommand)
+	sub = &cobra.Command{
+		Use:   `post ["/api/v1/posts/ID"]`,
+		Short: `A blog post`,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp6.Run(c, args) },
+	}
+	tmp6.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp6.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	tmp7 := new(DeleteUserCommand)
+	sub = &cobra.Command{
+		Use:   `user ["/api/v1/users/ID"]`,
+		Short: `A User`,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp7.Run(c, args) },
+	}
+	tmp7.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp7.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
 		Use:   "jwt",
 		Short: `Creates a valid JWT`,
 	}
-	tmp6 := new(JWTAuthCommand)
+	tmp8 := new(JWTAuthCommand)
 	sub = &cobra.Command{
 		Use:   `auth ["/api/v1/auth"]`,
 		Short: `An authorization service`,
@@ -183,59 +237,77 @@ Payload example:
 Payload example:
 
 {
-   "email": "c",
-   "password": "Est ratione similique."
+   "email": "hb",
+   "password": "Consectetur qui ipsam odit."
 }`,
-		RunE: func(cmd *cobra.Command, args []string) error { return tmp6.Run(c, args) },
-	}
-	tmp6.RegisterFlags(sub, c)
-	sub.PersistentFlags().BoolVar(&tmp6.PrettyPrint, "pp", false, "Pretty print response body")
-	command.AddCommand(sub)
-	app.AddCommand(command)
-	command = &cobra.Command{
-		Use:   "list",
-		Short: `list action`,
-	}
-	tmp7 := new(ListPostCommand)
-	sub = &cobra.Command{
-		Use:   `post ["/api/v1/posts"]`,
-		Short: `A blog post`,
-		RunE:  func(cmd *cobra.Command, args []string) error { return tmp7.Run(c, args) },
-	}
-	tmp7.RegisterFlags(sub, c)
-	sub.PersistentFlags().BoolVar(&tmp7.PrettyPrint, "pp", false, "Pretty print response body")
-	command.AddCommand(sub)
-	tmp8 := new(ListUserCommand)
-	sub = &cobra.Command{
-		Use:   `user ["/api/v1/users"]`,
-		Short: `A User`,
-		RunE:  func(cmd *cobra.Command, args []string) error { return tmp8.Run(c, args) },
+		RunE: func(cmd *cobra.Command, args []string) error { return tmp8.Run(c, args) },
 	}
 	tmp8.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp8.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
-		Use:   "show",
-		Short: `show action`,
+		Use:   "list",
+		Short: `list action`,
 	}
-	tmp9 := new(ShowPostCommand)
+	tmp9 := new(ListPhotoCommand)
 	sub = &cobra.Command{
-		Use:   `post ["/api/v1/posts/ID"]`,
-		Short: `A blog post`,
+		Use:   `photo ["/api/v1/photos"]`,
+		Short: `A blog photo`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp9.Run(c, args) },
 	}
 	tmp9.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp9.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp10 := new(ShowUserCommand)
+	tmp10 := new(ListPostCommand)
 	sub = &cobra.Command{
-		Use:   `user ["/api/v1/users/ID"]`,
-		Short: `A User`,
+		Use:   `post ["/api/v1/posts"]`,
+		Short: `A blog post`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp10.Run(c, args) },
 	}
 	tmp10.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp10.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	tmp11 := new(ListUserCommand)
+	sub = &cobra.Command{
+		Use:   `user ["/api/v1/users"]`,
+		Short: `A User`,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp11.Run(c, args) },
+	}
+	tmp11.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp11.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "show",
+		Short: `show action`,
+	}
+	tmp12 := new(ShowPhotoCommand)
+	sub = &cobra.Command{
+		Use:   `photo ["/api/v1/photos/ID"]`,
+		Short: `A blog photo`,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp12.Run(c, args) },
+	}
+	tmp12.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp12.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	tmp13 := new(ShowPostCommand)
+	sub = &cobra.Command{
+		Use:   `post ["/api/v1/posts/ID"]`,
+		Short: `A blog post`,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp13.Run(c, args) },
+	}
+	tmp13.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp13.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	tmp14 := new(ShowUserCommand)
+	sub = &cobra.Command{
+		Use:   `user ["/api/v1/users/ID"]`,
+		Short: `A User`,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp14.Run(c, args) },
+	}
+	tmp14.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp14.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
 
@@ -490,6 +562,115 @@ func (cmd *JWTAuthCommand) Run(c *client.Client, args []string) error {
 func (cmd *JWTAuthCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
 	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
+}
+
+// Run makes the HTTP request corresponding to the CreatePhotoCommand command.
+func (cmd *CreatePhotoCommand) Run(c *client.Client, args []string) error {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = "/api/v1/photos"
+	}
+	var payload client.PhotoPayload
+	if cmd.Payload != "" {
+		err := json.Unmarshal([]byte(cmd.Payload), &payload)
+		if err != nil {
+			return fmt.Errorf("failed to deserialize payload: %s", err)
+		}
+	}
+	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	ctx := goa.WithLogger(context.Background(), logger)
+	resp, err := c.CreatePhoto(ctx, path, &payload, cmd.ContentType)
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
+	return nil
+}
+
+// RegisterFlags registers the command flags with the command line.
+func (cmd *CreatePhotoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
+	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
+}
+
+// Run makes the HTTP request corresponding to the DeletePhotoCommand command.
+func (cmd *DeletePhotoCommand) Run(c *client.Client, args []string) error {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = fmt.Sprintf("/api/v1/photos/%v", cmd.ID)
+	}
+	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	ctx := goa.WithLogger(context.Background(), logger)
+	resp, err := c.DeletePhoto(ctx, path)
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
+	return nil
+}
+
+// RegisterFlags registers the command flags with the command line.
+func (cmd *DeletePhotoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	var id int
+	cc.Flags().IntVar(&cmd.ID, "id", id, `Unique Photo ID`)
+}
+
+// Run makes the HTTP request corresponding to the ListPhotoCommand command.
+func (cmd *ListPhotoCommand) Run(c *client.Client, args []string) error {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = "/api/v1/photos"
+	}
+	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	ctx := goa.WithLogger(context.Background(), logger)
+	resp, err := c.ListPhoto(ctx, path)
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
+	return nil
+}
+
+// RegisterFlags registers the command flags with the command line.
+func (cmd *ListPhotoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+}
+
+// Run makes the HTTP request corresponding to the ShowPhotoCommand command.
+func (cmd *ShowPhotoCommand) Run(c *client.Client, args []string) error {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = fmt.Sprintf("/api/v1/photos/%v", cmd.ID)
+	}
+	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	ctx := goa.WithLogger(context.Background(), logger)
+	resp, err := c.ShowPhoto(ctx, path)
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
+	return nil
+}
+
+// RegisterFlags registers the command flags with the command line.
+func (cmd *ShowPhotoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	var id int
+	cc.Flags().IntVar(&cmd.ID, "id", id, `Unique Photo ID`)
 }
 
 // Run makes the HTTP request corresponding to the CreatePostCommand command.

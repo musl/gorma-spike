@@ -77,6 +77,105 @@ func (ut *AuthPayload) Validate() (err error) {
 	return
 }
 
+// Photo Payload is used to create photos.
+type photoPayload struct {
+	// name of a post
+	Alt *string `form:"alt,omitempty" json:"alt,omitempty" xml:"alt,omitempty"`
+	// URL to full-size image
+	OriginalURL *string `form:"original_url,omitempty" json:"original_url,omitempty" xml:"original_url,omitempty"`
+	// is the photo published
+	Published *bool `form:"published,omitempty" json:"published,omitempty" xml:"published,omitempty"`
+	// URL to thumbnail-size image
+	ThumbnailURL *string `form:"thumbnail_url,omitempty" json:"thumbnail_url,omitempty" xml:"thumbnail_url,omitempty"`
+}
+
+// Validate validates the photoPayload type instance.
+func (ut *photoPayload) Validate() (err error) {
+	if ut.Alt == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "alt"))
+	}
+	if ut.OriginalURL == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "original_url"))
+	}
+	if ut.ThumbnailURL == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "thumbnail_url"))
+	}
+	if ut.Published == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "published"))
+	}
+
+	if ut.Alt != nil {
+		if utf8.RuneCountInString(*ut.Alt) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.alt`, *ut.Alt, utf8.RuneCountInString(*ut.Alt), 1, true))
+		}
+	}
+	if ut.OriginalURL != nil {
+		if utf8.RuneCountInString(*ut.OriginalURL) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.original_url`, *ut.OriginalURL, utf8.RuneCountInString(*ut.OriginalURL), 1, true))
+		}
+	}
+	if ut.ThumbnailURL != nil {
+		if utf8.RuneCountInString(*ut.ThumbnailURL) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.thumbnail_url`, *ut.ThumbnailURL, utf8.RuneCountInString(*ut.ThumbnailURL), 1, true))
+		}
+	}
+	return
+}
+
+// Publicize creates PhotoPayload from photoPayload
+func (ut *photoPayload) Publicize() *PhotoPayload {
+	var pub PhotoPayload
+	if ut.Alt != nil {
+		pub.Alt = *ut.Alt
+	}
+	if ut.OriginalURL != nil {
+		pub.OriginalURL = *ut.OriginalURL
+	}
+	if ut.Published != nil {
+		pub.Published = *ut.Published
+	}
+	if ut.ThumbnailURL != nil {
+		pub.ThumbnailURL = *ut.ThumbnailURL
+	}
+	return &pub
+}
+
+// Photo Payload is used to create photos.
+type PhotoPayload struct {
+	// name of a post
+	Alt string `form:"alt" json:"alt" xml:"alt"`
+	// URL to full-size image
+	OriginalURL string `form:"original_url" json:"original_url" xml:"original_url"`
+	// is the photo published
+	Published bool `form:"published" json:"published" xml:"published"`
+	// URL to thumbnail-size image
+	ThumbnailURL string `form:"thumbnail_url" json:"thumbnail_url" xml:"thumbnail_url"`
+}
+
+// Validate validates the PhotoPayload type instance.
+func (ut *PhotoPayload) Validate() (err error) {
+	if ut.Alt == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "alt"))
+	}
+	if ut.OriginalURL == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "original_url"))
+	}
+	if ut.ThumbnailURL == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "thumbnail_url"))
+	}
+
+	if utf8.RuneCountInString(ut.Alt) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.alt`, ut.Alt, utf8.RuneCountInString(ut.Alt), 1, true))
+	}
+	if utf8.RuneCountInString(ut.OriginalURL) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.original_url`, ut.OriginalURL, utf8.RuneCountInString(ut.OriginalURL), 1, true))
+	}
+	if utf8.RuneCountInString(ut.ThumbnailURL) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.thumbnail_url`, ut.ThumbnailURL, utf8.RuneCountInString(ut.ThumbnailURL), 1, true))
+	}
+	return
+}
+
 // Post Payload is used to create posts.
 type postPayload struct {
 	// body of a post

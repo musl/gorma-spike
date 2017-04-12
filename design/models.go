@@ -54,5 +54,27 @@ var _ = StorageGroup("TheDatabase", func() {
 			Field("deleted_at", gorma.NullableTimestamp, func() {})
 		})
 
+		Model("Photo", func() {
+			Description("This is the Photo model")
+
+			RendersTo(PhotoMedia)
+			BuildsFrom(func() {
+				Payload("photo", "create")
+			})
+
+			Field("id", gorma.Integer, func() {
+				Description("Surrogate key for Photo model")
+				PrimaryKey()
+			})
+
+			Field("alt", gorma.String, func() {})
+			Field("original_url", gorma.String, func() {})
+			Field("thumbnail_url", gorma.String, func() {})
+			Field("published", gorma.Boolean, func() {})
+
+			Field("created_at", gorma.Timestamp, func() {})
+			Field("updated_at", gorma.Timestamp, func() {})
+			Field("deleted_at", gorma.NullableTimestamp, func() {})
+		})
 	})
 })

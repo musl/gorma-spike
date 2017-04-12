@@ -1,4 +1,13 @@
-hixio
-hixio-cli
 *.key
 *.key.pub
+.DS_Store
+.env
+/build
+/coverage
+/node_modules
+hixio
+hixio-cli
+hixio-migrate
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

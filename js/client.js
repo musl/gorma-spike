@@ -37,6 +37,26 @@ define(['axios'] , function (axios) {
     return client(cfg);
   }
 
+  // creates a photo
+  // path is the request path, the format is "/api/v1/photos"
+  // data contains the action payload (request body)
+  // config is an optional object to be merged into the config built by the function prior to making the request.
+  // The content of the config object is described here: https://github.com/mzabriskie/axios#request-api
+  // This function returns a promise which raises an error if the HTTP response is a 4xx or 5xx.
+  client.createPhoto = function (path, data, config) {
+    cfg = {
+      timeout: timeout,
+      url: urlPrefix + path,
+      method: 'post',
+    data: data,
+      responseType: 'json'
+    };
+    if (config) {
+      cfg = merge(cfg, config);
+    }
+    return client(cfg);
+  }
+
   // creates a post
   // path is the request path, the format is "/api/v1/posts"
   // data contains the action payload (request body)
@@ -69,6 +89,24 @@ define(['axios'] , function (axios) {
       url: urlPrefix + path,
       method: 'post',
     data: data,
+      responseType: 'json'
+    };
+    if (config) {
+      cfg = merge(cfg, config);
+    }
+    return client(cfg);
+  }
+
+  // deletes a photo
+  // path is the request path, the format is "/api/v1/photos/:id"
+  // config is an optional object to be merged into the config built by the function prior to making the request.
+  // The content of the config object is described here: https://github.com/mzabriskie/axios#request-api
+  // This function returns a promise which raises an error if the HTTP response is a 4xx or 5xx.
+  client.deletePhoto = function (path, config) {
+    cfg = {
+      timeout: timeout,
+      url: urlPrefix + path,
+      method: 'delete',
       responseType: 'json'
     };
     if (config) {
@@ -133,6 +171,24 @@ define(['axios'] , function (axios) {
     return client(cfg);
   }
 
+  // lists all published photos
+  // path is the request path, the format is "/api/v1/photos"
+  // config is an optional object to be merged into the config built by the function prior to making the request.
+  // The content of the config object is described here: https://github.com/mzabriskie/axios#request-api
+  // This function returns a promise which raises an error if the HTTP response is a 4xx or 5xx.
+  client.listPhoto = function (path, config) {
+    cfg = {
+      timeout: timeout,
+      url: urlPrefix + path,
+      method: 'get',
+      responseType: 'json'
+    };
+    if (config) {
+      cfg = merge(cfg, config);
+    }
+    return client(cfg);
+  }
+
   // lists all publisged posts
   // path is the request path, the format is "/api/v1/posts"
   // config is an optional object to be merged into the config built by the function prior to making the request.
@@ -157,6 +213,24 @@ define(['axios'] , function (axios) {
   // The content of the config object is described here: https://github.com/mzabriskie/axios#request-api
   // This function returns a promise which raises an error if the HTTP response is a 4xx or 5xx.
   client.listUser = function (path, config) {
+    cfg = {
+      timeout: timeout,
+      url: urlPrefix + path,
+      method: 'get',
+      responseType: 'json'
+    };
+    if (config) {
+      cfg = merge(cfg, config);
+    }
+    return client(cfg);
+  }
+
+  // shows a photo
+  // path is the request path, the format is "/api/v1/photos/:id"
+  // config is an optional object to be merged into the config built by the function prior to making the request.
+  // The content of the config object is described here: https://github.com/mzabriskie/axios#request-api
+  // This function returns a promise which raises an error if the HTTP response is a 4xx or 5xx.
+  client.showPhoto = function (path, config) {
     cfg = {
       timeout: timeout,
       url: urlPrefix + path,

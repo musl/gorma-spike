@@ -18,6 +18,91 @@ import (
 	"unicode/utf8"
 )
 
+// photo media type (default view)
+//
+// Identifier: application/vnd.hixio.goa.photo; view=default
+type Photo struct {
+	// name of a post
+	Alt string `form:"alt" json:"alt" xml:"alt"`
+	// Unique Photo ID
+	ID int `form:"id" json:"id" xml:"id"`
+	// URL to full-size image
+	OriginalURL string `form:"original_url" json:"original_url" xml:"original_url"`
+	// is the photo published
+	Published bool `form:"published" json:"published" xml:"published"`
+	// URL to thumbnail-size image
+	ThumbnailURL string `form:"thumbnail_url" json:"thumbnail_url" xml:"thumbnail_url"`
+}
+
+// Validate validates the Photo media type instance.
+func (mt *Photo) Validate() (err error) {
+	if mt.Alt == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "alt"))
+	}
+	if mt.OriginalURL == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "original_url"))
+	}
+	if mt.ThumbnailURL == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "thumbnail_url"))
+	}
+
+	if utf8.RuneCountInString(mt.Alt) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.alt`, mt.Alt, utf8.RuneCountInString(mt.Alt), 1, true))
+	}
+	if utf8.RuneCountInString(mt.OriginalURL) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.original_url`, mt.OriginalURL, utf8.RuneCountInString(mt.OriginalURL), 1, true))
+	}
+	if utf8.RuneCountInString(mt.ThumbnailURL) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.thumbnail_url`, mt.ThumbnailURL, utf8.RuneCountInString(mt.ThumbnailURL), 1, true))
+	}
+	return
+}
+
+// DecodePhoto decodes the Photo instance encoded in resp body.
+func (c *Client) DecodePhoto(resp *http.Response) (*Photo, error) {
+	var decoded Photo
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return &decoded, err
+}
+
+// photoCollection is the media type for an array of photo (default view)
+//
+// Identifier: application/vnd.hixio.goa.photo; type=collection; view=default
+type PhotoCollection []*Photo
+
+// Validate validates the PhotoCollection media type instance.
+func (mt PhotoCollection) Validate() (err error) {
+	for _, e := range mt {
+		if e.Alt == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response[*]`, "alt"))
+		}
+		if e.OriginalURL == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response[*]`, "original_url"))
+		}
+		if e.ThumbnailURL == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response[*]`, "thumbnail_url"))
+		}
+
+		if utf8.RuneCountInString(e.Alt) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].alt`, e.Alt, utf8.RuneCountInString(e.Alt), 1, true))
+		}
+		if utf8.RuneCountInString(e.OriginalURL) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].original_url`, e.OriginalURL, utf8.RuneCountInString(e.OriginalURL), 1, true))
+		}
+		if utf8.RuneCountInString(e.ThumbnailURL) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].thumbnail_url`, e.ThumbnailURL, utf8.RuneCountInString(e.ThumbnailURL), 1, true))
+		}
+	}
+	return
+}
+
+// DecodePhotoCollection decodes the PhotoCollection instance encoded in resp body.
+func (c *Client) DecodePhotoCollection(resp *http.Response) (PhotoCollection, error) {
+	var decoded PhotoCollection
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return decoded, err
+}
+
 // post media type (default view)
 //
 // Identifier: application/vnd.hixio.goa.post; view=default
