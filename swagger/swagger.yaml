@@ -25,16 +25,16 @@ definitions:
     description: Photo Payload is used to create photos.
     example:
       alt: 1x
-      original_url: "6"
+      original: "6"
       published: false
-      thumbnail_url: b
+      thumbnail: b
     properties:
       alt:
         description: name of a post
         example: 1x
         minLength: 1
         type: string
-      original_url:
+      original:
         description: URL to full-size image
         example: "6"
         minLength: 1
@@ -43,15 +43,15 @@ definitions:
         description: is the photo published
         example: false
         type: boolean
-      thumbnail_url:
+      thumbnail:
         description: URL to thumbnail-size image
         example: b
         minLength: 1
         type: string
     required:
     - alt
-    - original_url
-    - thumbnail_url
+    - original
+    - thumbnail
     - published
     title: PhotoPayload
     type: object
@@ -152,9 +152,9 @@ definitions:
       alt: "6"
       created_at: 2015-06-05T09:50:50-07:00
       id: 3.296916e+18
-      original_url: "0"
+      original: "0"
       published: true
-      thumbnail_url: m
+      thumbnail: m
       updated_at: 2015-05-06T23:50:59-07:00
     properties:
       alt:
@@ -171,7 +171,7 @@ definitions:
         example: 3.296916e+18
         format: int64
         type: integer
-      original_url:
+      original:
         description: URL to full-size image
         example: "0"
         minLength: 1
@@ -180,7 +180,7 @@ definitions:
         description: is the photo published
         example: true
         type: boolean
-      thumbnail_url:
+      thumbnail:
         description: URL to thumbnail-size image
         example: m
         minLength: 1
@@ -192,8 +192,8 @@ definitions:
     required:
     - id
     - alt
-    - original_url
-    - thumbnail_url
+    - original
+    - thumbnail
     - published
     title: 'Mediatype identifier: application/vnd.hixio.goa.photo'
     type: object
@@ -204,23 +204,23 @@ definitions:
     - alt: "6"
       created_at: 2015-06-05T09:50:50-07:00
       id: 3.296916e+18
-      original_url: "0"
+      original: "0"
       published: true
-      thumbnail_url: m
+      thumbnail: m
       updated_at: 2015-05-06T23:50:59-07:00
     - alt: "6"
       created_at: 2015-06-05T09:50:50-07:00
       id: 3.296916e+18
-      original_url: "0"
+      original: "0"
       published: true
-      thumbnail_url: m
+      thumbnail: m
       updated_at: 2015-05-06T23:50:59-07:00
     - alt: "6"
       created_at: 2015-06-05T09:50:50-07:00
       id: 3.296916e+18
-      original_url: "0"
+      original: "0"
       published: true
-      thumbnail_url: m
+      thumbnail: m
       updated_at: 2015-05-06T23:50:59-07:00
     items:
       $ref: '#/definitions/photo'

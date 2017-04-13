@@ -82,11 +82,11 @@ type photoPayload struct {
 	// name of a post
 	Alt *string `form:"alt,omitempty" json:"alt,omitempty" xml:"alt,omitempty"`
 	// URL to full-size image
-	OriginalURL *string `form:"original_url,omitempty" json:"original_url,omitempty" xml:"original_url,omitempty"`
+	Original *string `form:"original,omitempty" json:"original,omitempty" xml:"original,omitempty"`
 	// is the photo published
 	Published *bool `form:"published,omitempty" json:"published,omitempty" xml:"published,omitempty"`
 	// URL to thumbnail-size image
-	ThumbnailURL *string `form:"thumbnail_url,omitempty" json:"thumbnail_url,omitempty" xml:"thumbnail_url,omitempty"`
+	Thumbnail *string `form:"thumbnail,omitempty" json:"thumbnail,omitempty" xml:"thumbnail,omitempty"`
 }
 
 // Validate validates the photoPayload type instance.
@@ -94,11 +94,11 @@ func (ut *photoPayload) Validate() (err error) {
 	if ut.Alt == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "alt"))
 	}
-	if ut.OriginalURL == nil {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "original_url"))
+	if ut.Original == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "original"))
 	}
-	if ut.ThumbnailURL == nil {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "thumbnail_url"))
+	if ut.Thumbnail == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "thumbnail"))
 	}
 	if ut.Published == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "published"))
@@ -109,14 +109,14 @@ func (ut *photoPayload) Validate() (err error) {
 			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.alt`, *ut.Alt, utf8.RuneCountInString(*ut.Alt), 1, true))
 		}
 	}
-	if ut.OriginalURL != nil {
-		if utf8.RuneCountInString(*ut.OriginalURL) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.original_url`, *ut.OriginalURL, utf8.RuneCountInString(*ut.OriginalURL), 1, true))
+	if ut.Original != nil {
+		if utf8.RuneCountInString(*ut.Original) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.original`, *ut.Original, utf8.RuneCountInString(*ut.Original), 1, true))
 		}
 	}
-	if ut.ThumbnailURL != nil {
-		if utf8.RuneCountInString(*ut.ThumbnailURL) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.thumbnail_url`, *ut.ThumbnailURL, utf8.RuneCountInString(*ut.ThumbnailURL), 1, true))
+	if ut.Thumbnail != nil {
+		if utf8.RuneCountInString(*ut.Thumbnail) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.thumbnail`, *ut.Thumbnail, utf8.RuneCountInString(*ut.Thumbnail), 1, true))
 		}
 	}
 	return
@@ -128,14 +128,14 @@ func (ut *photoPayload) Publicize() *PhotoPayload {
 	if ut.Alt != nil {
 		pub.Alt = *ut.Alt
 	}
-	if ut.OriginalURL != nil {
-		pub.OriginalURL = *ut.OriginalURL
+	if ut.Original != nil {
+		pub.Original = *ut.Original
 	}
 	if ut.Published != nil {
 		pub.Published = *ut.Published
 	}
-	if ut.ThumbnailURL != nil {
-		pub.ThumbnailURL = *ut.ThumbnailURL
+	if ut.Thumbnail != nil {
+		pub.Thumbnail = *ut.Thumbnail
 	}
 	return &pub
 }
@@ -145,11 +145,11 @@ type PhotoPayload struct {
 	// name of a post
 	Alt string `form:"alt" json:"alt" xml:"alt"`
 	// URL to full-size image
-	OriginalURL string `form:"original_url" json:"original_url" xml:"original_url"`
+	Original string `form:"original" json:"original" xml:"original"`
 	// is the photo published
 	Published bool `form:"published" json:"published" xml:"published"`
 	// URL to thumbnail-size image
-	ThumbnailURL string `form:"thumbnail_url" json:"thumbnail_url" xml:"thumbnail_url"`
+	Thumbnail string `form:"thumbnail" json:"thumbnail" xml:"thumbnail"`
 }
 
 // Validate validates the PhotoPayload type instance.
@@ -157,21 +157,21 @@ func (ut *PhotoPayload) Validate() (err error) {
 	if ut.Alt == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "alt"))
 	}
-	if ut.OriginalURL == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "original_url"))
+	if ut.Original == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "original"))
 	}
-	if ut.ThumbnailURL == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "thumbnail_url"))
+	if ut.Thumbnail == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "thumbnail"))
 	}
 
 	if utf8.RuneCountInString(ut.Alt) < 1 {
 		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.alt`, ut.Alt, utf8.RuneCountInString(ut.Alt), 1, true))
 	}
-	if utf8.RuneCountInString(ut.OriginalURL) < 1 {
-		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.original_url`, ut.OriginalURL, utf8.RuneCountInString(ut.OriginalURL), 1, true))
+	if utf8.RuneCountInString(ut.Original) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.original`, ut.Original, utf8.RuneCountInString(ut.Original), 1, true))
 	}
-	if utf8.RuneCountInString(ut.ThumbnailURL) < 1 {
-		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.thumbnail_url`, ut.ThumbnailURL, utf8.RuneCountInString(ut.ThumbnailURL), 1, true))
+	if utf8.RuneCountInString(ut.Thumbnail) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.thumbnail`, ut.Thumbnail, utf8.RuneCountInString(ut.Thumbnail), 1, true))
 	}
 	return
 }

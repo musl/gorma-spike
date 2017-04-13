@@ -146,9 +146,9 @@ Payload example:
 
 {
    "alt": "1x",
-   "original_url": "6",
+   "original": "6",
    "published": false,
-   "thumbnail_url": "b"
+   "thumbnail": "b"
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}

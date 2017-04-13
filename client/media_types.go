@@ -29,12 +29,12 @@ type Photo struct {
 	// Unique Photo ID
 	ID int `form:"id" json:"id" xml:"id"`
 	// URL to full-size image
-	OriginalURL string `form:"original_url" json:"original_url" xml:"original_url"`
+	Original string `form:"original" json:"original" xml:"original"`
 	// is the photo published
 	Published bool `form:"published" json:"published" xml:"published"`
 	// URL to thumbnail-size image
-	ThumbnailURL string     `form:"thumbnail_url" json:"thumbnail_url" xml:"thumbnail_url"`
-	UpdatedAt    *time.Time `form:"updated_at,omitempty" json:"updated_at,omitempty" xml:"updated_at,omitempty"`
+	Thumbnail string     `form:"thumbnail" json:"thumbnail" xml:"thumbnail"`
+	UpdatedAt *time.Time `form:"updated_at,omitempty" json:"updated_at,omitempty" xml:"updated_at,omitempty"`
 }
 
 // Validate validates the Photo media type instance.
@@ -42,21 +42,21 @@ func (mt *Photo) Validate() (err error) {
 	if mt.Alt == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "alt"))
 	}
-	if mt.OriginalURL == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "original_url"))
+	if mt.Original == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "original"))
 	}
-	if mt.ThumbnailURL == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "thumbnail_url"))
+	if mt.Thumbnail == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "thumbnail"))
 	}
 
 	if utf8.RuneCountInString(mt.Alt) < 1 {
 		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.alt`, mt.Alt, utf8.RuneCountInString(mt.Alt), 1, true))
 	}
-	if utf8.RuneCountInString(mt.OriginalURL) < 1 {
-		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.original_url`, mt.OriginalURL, utf8.RuneCountInString(mt.OriginalURL), 1, true))
+	if utf8.RuneCountInString(mt.Original) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.original`, mt.Original, utf8.RuneCountInString(mt.Original), 1, true))
 	}
-	if utf8.RuneCountInString(mt.ThumbnailURL) < 1 {
-		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.thumbnail_url`, mt.ThumbnailURL, utf8.RuneCountInString(mt.ThumbnailURL), 1, true))
+	if utf8.RuneCountInString(mt.Thumbnail) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.thumbnail`, mt.Thumbnail, utf8.RuneCountInString(mt.Thumbnail), 1, true))
 	}
 	return
 }
@@ -79,21 +79,21 @@ func (mt PhotoCollection) Validate() (err error) {
 		if e.Alt == "" {
 			err = goa.MergeErrors(err, goa.MissingAttributeError(`response[*]`, "alt"))
 		}
-		if e.OriginalURL == "" {
-			err = goa.MergeErrors(err, goa.MissingAttributeError(`response[*]`, "original_url"))
+		if e.Original == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response[*]`, "original"))
 		}
-		if e.ThumbnailURL == "" {
-			err = goa.MergeErrors(err, goa.MissingAttributeError(`response[*]`, "thumbnail_url"))
+		if e.Thumbnail == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response[*]`, "thumbnail"))
 		}
 
 		if utf8.RuneCountInString(e.Alt) < 1 {
 			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].alt`, e.Alt, utf8.RuneCountInString(e.Alt), 1, true))
 		}
-		if utf8.RuneCountInString(e.OriginalURL) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].original_url`, e.OriginalURL, utf8.RuneCountInString(e.OriginalURL), 1, true))
+		if utf8.RuneCountInString(e.Original) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].original`, e.Original, utf8.RuneCountInString(e.Original), 1, true))
 		}
-		if utf8.RuneCountInString(e.ThumbnailURL) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].thumbnail_url`, e.ThumbnailURL, utf8.RuneCountInString(e.ThumbnailURL), 1, true))
+		if utf8.RuneCountInString(e.Thumbnail) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response[*].thumbnail`, e.Thumbnail, utf8.RuneCountInString(e.Thumbnail), 1, true))
 		}
 	}
 	return

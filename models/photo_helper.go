@@ -48,9 +48,9 @@ func (m *Photo) PhotoToPhoto() *app.Photo {
 	photo.Alt = m.Alt
 	photo.CreatedAt = &m.CreatedAt
 	photo.ID = m.ID
-	photo.OriginalURL = m.OriginalURL
+	photo.Original = m.Original
 	photo.Published = m.Published
-	photo.ThumbnailURL = m.ThumbnailURL
+	photo.Thumbnail = m.Thumbnail
 	photo.UpdatedAt = &m.UpdatedAt
 
 	return photo

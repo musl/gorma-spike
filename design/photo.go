@@ -10,14 +10,14 @@ var PhotoPayload = Type("PhotoPayload", func() {
 	Attribute("alt", String, "name of a post", func() {
 		MinLength(1)
 	})
-	Attribute("original_url", String, "URL to full-size image", func() {
+	Attribute("original", String, "URL to full-size image", func() {
 		MinLength(1)
 	})
-	Attribute("thumbnail_url", String, "URL to thumbnail-size image", func() {
+	Attribute("thumbnail", String, "URL to thumbnail-size image", func() {
 		MinLength(1)
 	})
 	Attribute("published", Boolean, "is the photo published")
-	Required("alt", "original_url", "thumbnail_url", "published")
+	Required("alt", "original", "thumbnail", "published")
 })
 
 var PhotoMedia = MediaType("application/vnd.hixio.goa.photo", func() {
@@ -27,19 +27,19 @@ var PhotoMedia = MediaType("application/vnd.hixio.goa.photo", func() {
 	Attributes(func() {
 		Attribute("id", Integer, "Unique Photo ID")
 		Attribute("alt")
-		Attribute("original_url")
-		Attribute("thumbnail_url")
+		Attribute("original")
+		Attribute("thumbnail")
 		Attribute("published")
 		Attribute("created_at", DateTime)
 		Attribute("updated_at", DateTime)
-		Required("id", "alt", "original_url", "thumbnail_url", "published")
+		Required("id", "alt", "original", "thumbnail", "published")
 	})
 
 	View("default", func() {
 		Attribute("id")
 		Attribute("alt")
-		Attribute("original_url")
-		Attribute("thumbnail_url")
+		Attribute("original")
+		Attribute("thumbnail")
 		Attribute("published")
 		Attribute("created_at")
 		Attribute("updated_at")

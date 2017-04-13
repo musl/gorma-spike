@@ -29,15 +29,15 @@ const Photo = (props) => (
   <div>
     <h2>{props.alt}</h2>
     <p><Moment format="YYYY-MM-DD">{props.created_at}</Moment></p>
-    <a href={props.original_url}>
-      <img src={props.original_url} alt={props.alt} className="pure-img photo-original"/>
+    <a href={props.original}>
+      <img src={props.original} alt={props.alt} className="pure-img photo-original"/>
     </a>
   </div>
 );
 
 const Thumbnail = (props) => (
   <Link to={"/photos/" + props.id} className="photo-thumbnail">
-    <img src={props.thumbnail_url} alt={props.alt} className="photo-thumbnail"/>
+    <img src={props.thumbnail} alt={props.alt} className="photo-thumbnail"/>
   </Link>
 );
 
@@ -140,6 +140,7 @@ class App extends Component {
       var groups = {};
 
       res.data.forEach((photo) => {
+        console.log(photo);
         var date = new Date(photo.created_at);
         var group = moment(date).format("MMM YYYY");
 

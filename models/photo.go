@@ -24,8 +24,10 @@ import (
 type Photo struct {
 	ID           int `gorm:"primary_key"` // primary key
 	Alt          string
+	Original     string
 	OriginalURL  string `gorm:"column:original_u_r_l"`
 	Published    bool
+	Thumbnail    string
 	ThumbnailURL string     `gorm:"column:thumbnail_u_r_l"`
 	CreatedAt    time.Time  // timestamp
 	DeletedAt    *time.Time // nullable timestamp (soft delete)
@@ -154,9 +156,9 @@ func (m *PhotoDB) Delete(ctx context.Context, id int) error {
 func PhotoFromPhotoPayload(payload *app.PhotoPayload) *Photo {
 	photo := &Photo{}
 	photo.Alt = payload.Alt
-	photo.OriginalURL = payload.OriginalURL
+	photo.Original = payload.Original
 	photo.Published = payload.Published
-	photo.ThumbnailURL = payload.ThumbnailURL
+	photo.Thumbnail = payload.Thumbnail
 
 	return photo
 }
@@ -172,9 +174,9 @@ func (m *PhotoDB) UpdateFromPhotoPayload(ctx context.Context, payload *app.Photo
 		return err
 	}
 	obj.Alt = payload.Alt
-	obj.OriginalURL = payload.OriginalURL
+	obj.Original = payload.Original
 	obj.Published = payload.Published
-	obj.ThumbnailURL = payload.ThumbnailURL
+	obj.Thumbnail = payload.Thumbnail
 
 	err = m.Db.Save(&obj).Error
 	return err
