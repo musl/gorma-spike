@@ -238,3 +238,19 @@ ul.post-list > li {
   margin: 0 !important;
 }
 
+.info {
+  color: #0ac;
+}
+
+.success {
+  color: #aca;
+}
+
+.warning {
+  color: #ca8;
+}
+
+.error {
+  color: #caa;
+}
+

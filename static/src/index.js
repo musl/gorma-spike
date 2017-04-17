@@ -1,5 +1,3 @@
-// I know not with what weapons World War III will be fought, but World War IV will be fought with sticks and stones. -- Albert Einstein
-
 import React, {
   Component
 } from 'react';
@@ -119,9 +117,131 @@ const PostIndex = (props) => (
   </div>
 );
 
+class Admin extends Component {
+  constructor(props) {
+    super(props);
+
+    // TODO check for token in browser storage.
+    // TODO validate & refresh token?
+    // Does this need to be handled asynchronously?
+
+    this.state = {
+      email: "",
+      password: "",
+      token: null,
+      flash: null,
+      flash_id: null,
+      flash_class: null,
+    };
+
+    this.handleEmailChange = this.handleEmailChange.bind(this);
+    this.handlePasswordChange = this.handlePasswordChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleLogOut = this.handleLogOut.bind(this);
+  }
+  // NOTE needs separate component.
+  flash(message, class_name, delay) {
+    if(!class_name) { class_name = 'info'; }
+    if(!delay) { delay = 10000; }
+
+    if(this.state.flash_id) {
+      this.setState((prevState, props) => {
+        clearTimeout(prevState.flash_id);
+        return { flash_id: null };
+      });
+    }
+
+    const id = window.setTimeout(() => {
+      this.setState({
+        flash: null,
+        flash_class: null,
+        flash_id: null
+      });
+    }, delay);
+
+    this.setState({
+      flash: message,
+      flash_class: class_name,
+      flash_id: id
+    });
+
+  }
+  // NOTE react-validators? react-forms?
+  handleEmailChange(event) {
+    this.setState({email: event.target.value});
+  }
+  handlePasswordChange(event) {
+    this.setState({password: event.target.value});
+  }
+  // NOTE push this state and events up into App?
+  handleSubmit(event) {
+    const uri = 'http://localhost:3000/api/v1/auth';
+
+    axios.post(uri, {
+      email: this.state.email,
+      password: this.state.password
+    }).then((res) => {
+      this.setState({token: res.headers.authorization.split(' ')[1]});
+      this.flash('You have logged in.', 'success');
+    }).catch((error) => {
+      this.flash(`Log in failed: ${error.response.status}`, 'warning');
+    });
+
+    event.preventDefault();
+  }
+  handleLogOut() {
+    // TODO also clear token from browser storage.
+    this.setState({token: null});
+    this.flash('You have logged out.', 'success');
+  }
+  render() {
+    if(this.state.token) {
+      // Create Forms
+      return (
+        <div>
+          <h2>Admin</h2>
+          {this.state.flash ? (
+            <p className={this.state.flash_class}>{this.state.flash}</p>
+          ) : (null)}
+          <button className="pure-button" onClick={this.handleLogOut}>log out</button>
+        </div>
+      );
+    } else {
+      // Login Form
+      return (
+        <div>
+          <h2>Hi.</h2>
+          {this.state.flash ? (
+            <p className={this.state.flash_class}>{this.state.flash}</p>
+          ) : (null)}
+          <form onSubmit={this.handleSubmit} className="pure-form pure-form-aligned" >
+            <fieldset>
+              <div className="pure-control-group">
+                <label for="email"><i className="fa fa-envelope">&nbsp;</i></label>
+                <input id="email" type="email" value={this.state.email} onChange={this.handleEmailChange} required />
+                <span className="pure-form-message-inline"></span>
+              </div>
+              <div className="pure-control-group">
+                <label for="password"><i className="fa fa-star">&nbsp;</i></label>
+                <input id="password" type="password" value={this.state.password} onChange={this.handlePasswordChange} required />
+                <span className="pure-form-message-inline"></span>
+              </div>
+              <div className="pure-control-group">
+                <label>&nbsp;</label>
+                <input type="submit" value="log in" className="pure-button" />
+                <span className="pure-form-message-inline"></span>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+      );
+    }
+  };
+};
+
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       posts: [],
       photos: [],
@@ -201,6 +321,12 @@ class App extends Component {
             <li><a href="https://freenode.net/"><i className="fa fa-terminal"></i>&nbsp;musl</a></li>
           </ul>
           <p>&#x2235;</p>
+          <p>&nbsp;</p>
+          <p>&#x2234;</p>
+          <ul>
+            <li><Link to='/admin'><i className="fa fa-key"></i></Link></li>
+          </ul>
+          <p>&#x2235;</p>
         </section>
         <section className="pure-u-1 pure-u-md-2-3 content-box">
           <div className="column-pad">
@@ -209,6 +335,7 @@ class App extends Component {
               <Route path='/photos'><PhotoIndex photos={this.state.photos} photo_groups={this.state.photo_groups}/></Route>
               <Route path='/posts/:id'>{(props) => this.findPost(props)}</Route>
               <Route path='/posts'><PostIndex posts={this.state.posts}/></Route>
+              <Route path='/admin'><Admin {...this.state}/></Route>
               <Route path='/'><Index posts={this.state.posts}/></Route>
               <Route component={NotFound}/>
             </Switch>
@@ -220,4 +347,6 @@ class App extends Component {
 }
 
 ReactDOM.render(<App/>, document.getElementById('root'));
+
+// I know not with what weapons World War III will be fought, but World War IV will be fought with sticks and stones. -- Albert Einstein
 
