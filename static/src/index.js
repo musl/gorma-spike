@@ -225,12 +225,12 @@ class Admin extends Component {
           <form onSubmit={this.handleSubmit} className="pure-form pure-form-aligned" >
             <fieldset>
               <div className="pure-control-group">
-                <label for="email"><i className="fa fa-envelope">&nbsp;</i></label>
+                <label htmlFor="email"><i className="fa fa-envelope">&nbsp;</i></label>
                 <input id="email" type="email" value={this.state.email} onChange={this.handleEmailChange} required />
                 <span className="pure-form-message-inline"></span>
               </div>
               <div className="pure-control-group">
-                <label for="password"><i className="fa fa-star">&nbsp;</i></label>
+                <label htmlFor="password"><i className="fa fa-star">&nbsp;</i></label>
                 <input id="password" type="password" value={this.state.password} onChange={this.handlePasswordChange} required />
                 <span className="pure-form-message-inline"></span>
               </div>
