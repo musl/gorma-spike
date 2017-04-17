@@ -117,13 +117,12 @@ const PostIndex = (props) => (
   </div>
 );
 
+// TODO break this up into discrete re-usable components.
 class Admin extends Component {
   constructor(props) {
     super(props);
 
-    // TODO check for token in browser storage.
     // TODO validate & refresh token?
-    // Does this need to be handled asynchronously?
 
     this.token_path = 'io.hix.auth.token';
     
@@ -146,7 +145,6 @@ class Admin extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleLogOut = this.handleLogOut.bind(this);
   }
-  // NOTE needs separate component.
   flash(message, class_name, delay) {
     if(!class_name) { class_name = 'info'; }
     if(!delay) { delay = 10000; }
@@ -199,8 +197,8 @@ class Admin extends Component {
     event.preventDefault();
   }
   handleLogOut() {
-    this.setState({token: null});
     this.storage.removeItem(this.token_path);
+    this.setState({token: null});
     this.flash('You have logged out.', 'success');
   }
   render() {
@@ -247,6 +245,7 @@ class Admin extends Component {
   };
 };
 
+// TODO authtoken refresher component?
 class App extends Component {
   constructor(props) {
     super(props);
