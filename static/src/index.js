@@ -125,10 +125,17 @@ class Admin extends Component {
     // TODO validate & refresh token?
     // Does this need to be handled asynchronously?
 
+    this.token_path = 'io.hix.auth.token';
+    
+    this.storage = localStorage;
+    //this.storage = sessionStorage;
+
+    var token = this.storage.getItem(this.token_path) || null;
+
     this.state = {
       email: "",
       password: "",
-      token: null,
+      token: token,
       flash: null,
       flash_id: null,
       flash_class: null,
@@ -181,7 +188,9 @@ class Admin extends Component {
       email: this.state.email,
       password: this.state.password
     }).then((res) => {
-      this.setState({token: res.headers.authorization.split(' ')[1]});
+      var token = res.headers.authorization.split(' ')[1];
+      this.storage.setItem(this.token_path, token);
+      this.setState({token: token});
       this.flash('You have logged in.', 'success');
     }).catch((error) => {
       this.flash(`Log in failed: ${error.response.status}`, 'warning');
@@ -190,13 +199,12 @@ class Admin extends Component {
     event.preventDefault();
   }
   handleLogOut() {
-    // TODO also clear token from browser storage.
     this.setState({token: null});
+    this.storage.removeItem(this.token_path);
     this.flash('You have logged out.', 'success');
   }
   render() {
     if(this.state.token) {
-      // Create Forms
       return (
         <div>
           <h2>Admin</h2>
