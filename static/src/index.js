@@ -268,7 +268,6 @@ class App extends Component {
       var groups = {};
 
       res.data.forEach((photo) => {
-        console.log(photo);
         var date = new Date(photo.created_at);
         var group = moment(date).format("MMM YYYY");
 
