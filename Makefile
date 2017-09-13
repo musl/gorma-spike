@@ -7,6 +7,7 @@ all: clean generate $(BIN) cli migrator frontend jwt.key.pub
 
 clean:
 	go clean .
+	rm -f $(BIN)
 	make -C static clean
 	make -C tool/hixio-cli clean
 	make -C db/hixio-migrate clean
