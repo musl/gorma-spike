@@ -1,7 +1,15 @@
 # hixio
 An exploration with goa, gorma, and more.
 
+## Prerequisites
+- openssl (recent)
+- postgresql-server 9.3+
+- go 1.7+
+
 ## Setup
+1. `rm -fr /tmp/gorma-spike`
+1. `initdb /tmp/gorma-spike`
+1. `postgres -D /tmp/gorma-spike`
 1. `psql < db/setup.sql`
 1. `make`
 1. `./hixio-migrate`

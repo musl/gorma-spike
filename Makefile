@@ -1,16 +1,16 @@
 
 BIN := hixio
-CLI := $(BIN)-cli
-MIG := $(BIN)-migrate
 
-.PHONY: all clean cli generate frontend run
+.PHONY: all clean generate build frontend
 
-all: clean generate $(BIN) $(CLI) $(MIG) frontend run
+all: clean generate $(BIN) cli migrator frontend jwt.key.pub
 
 clean:
 	go clean .
-	rm -f $(CLI) $(MIG)
-	rm -fr static/build
+	make -C static clean
+	make -C tool/hixio-cli clean
+	make -C db/hixio-migrate clean
+	rm -f jwt.key jwt.key.pub
 
 generate:
 	goagen app --design=github.com/musl/hixio/design
@@ -23,19 +23,20 @@ generate:
 	goagen gen --design=github.com/musl/hixio/design --pkg-path=github.com/goadesign/gorma
 
 $(BIN):
-	go build .
+	go build -o $(BIN) .
 
 frontend:
-	cd static; npm run build
+	make -C static
 
-run: $(BIN)
-	./$(BIN)
+cli:
+	make -C tool/hixio-cli
 
-$(CLI): $(BIN)
-	go clean github.com/musl/hixio/tool/hixio-cli
-	go build github.com/musl/hixio/tool/hixio-cli
+migrator:
+	make -C db/hixio-migrate
 
-$(MIG): $(BIN)
-	go clean github.com/musl/hixio/db/hixio-migrate
-	go build github.com/musl/hixio/db/hixio-migrate
+jwt.key:
+	openssl genrsa -out jwt.key 2048
+
+jwt.key.pub: jwt.key
+	openssl rsa -in jwt.key -pubout > jwt.key.pub
 

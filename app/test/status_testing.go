@@ -4,7 +4,7 @@
 // Generated with goagen v1.0.0, command line:
 // $ goagen
 // --design=github.com/musl/hixio/design
-// --out=$(GOPATH)/src/github.com/musl/hixio
+// --out=$(GOPATH)/src/github.com/musl/gorma-spike
 // --version=v1.0.0
 //
 // The content of this file is auto-generated, DO NOT MODIFY
@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/goatest"
-	"github.com/musl/hixio/app"
+	"github.com/musl/gorma-spike/app"
 	"golang.org/x/net/context"
 	"io"
 	"log"
